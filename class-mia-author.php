@@ -62,20 +62,73 @@ class MIA_Author{
 
 
 	/**
+	 * Enqueue Angular and plugin scripts.
+	 *
+	 * @since 0.0.1
+	 */
+	function enqueue_scripts(){ 
+
+		// Angular core
+		wp_enqueue_script( 
+			'angular', 
+			plugins_url( 'js/vendor/angular.min.js', __FILE__ ), 
+			false, 
+			null,
+			false
+		);
+
+		// Our controller
+		wp_enqueue_script(
+			'miaAuthor',
+			plugins_url( 'js/author.js', __FILE__ ),
+			false,
+			null,
+			true
+		);
+
+		// Prepare and print field data
+		$this->print_fields();
+
+	}
+
+
+	/**
 	 * Print all registered fields to javascript.
 	 *
 	 * @since 0.0.1
-	 * 
-	 * @return bool Returns true on success, WP_Error on failure.
 	 */
-	function print_fields(){}
+	function print_fields(){
+
+		// TODO: Prepare field data
+
+		// Use wp_localize_scripts to print field data to page
+		wp_localize_script(
+			'miaAuthor',
+			'miaAuthorFields',
+			array( 'Prepared field data here' )
+		);
+
+	}
 
 
 	/**
 	 * Set up plugin
 	 * 
 	 * @since 0.0.1
+	 * @param bool $load_default If true, load default fields from plugin.
 	 */
-	 function __construct(){}
+	function __construct( $load_default = true ) {
+
+		// Queue scripts and field data to be processed and printed at page load
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+
+		// If directed, include default field collection.
+		if( $load_default ) {
+
+			include( 'collections/default/load.php' );
+
+		}
+
+	}
 
 }
