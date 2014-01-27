@@ -22,6 +22,6 @@ $result = $default_collection->register_field( $field1 );
 
 if( is_wp_error( $result ) ) {
 
-	echo $result->get_error_message();
+	echo 'Error: ' . $result->get_error_message();
 	
 }

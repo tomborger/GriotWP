@@ -20,6 +20,6 @@ $result = $this->register_collection( $default_collection );
 
 if( is_wp_error( $result ) ) {
 
-	echo $result->get_error_message();
+	echo 'Error: ' . $result->get_error_message();
 
 }
