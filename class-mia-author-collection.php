@@ -16,7 +16,7 @@ class MIA_Author_Collection{
 	 * @since 0.0.1
 	 * @var string
 	 */
-	public $name;
+	public $name = '';
 
 
 	/**
@@ -25,7 +25,7 @@ class MIA_Author_Collection{
 	 * @since 0.0.1
 	 * @var string
 	 */
-	public $title;
+	public $title = '';
 
 
 	/**
@@ -34,7 +34,7 @@ class MIA_Author_Collection{
 	 * @since 0.0.1
 	 * @var string
 	 */
-	public $author;
+	public $author = '';
 
 
 	/**
@@ -43,7 +43,7 @@ class MIA_Author_Collection{
 	 * @since 0.0.1
 	 * @var string
 	 */
-	public $description;
+	public $description = '';
 
 
 	/**
@@ -52,7 +52,19 @@ class MIA_Author_Collection{
 	 * @since 0.0.1
 	 * @var array
 	 */
-	public $fields;
+	public $fields = array();
+
+	/**
+	 * Retrieve the collection's name property.
+	 * 
+	 * @since 0.0.1
+	 * @return string The name of the collection.
+	 */
+	function get_name() {
+
+		return $this->name;
+
+	}
 
 
 	/**
@@ -61,9 +73,48 @@ class MIA_Author_Collection{
 	 * @since 0.0.1
 	 * 
 	 * @param MIA_Author_Field $field The field object to register. 
-	 * @return bool Returns true on success, WP_Error on failure.
+	 * @return string|WP_Error Returns the field's key in the $fields array on 
+	 * success, WP_Error on failure.
 	 */
-	function register_field( $field ){}
+	function register_field( $field ){
+
+		// Bug out if this is not an MIA Author Field object
+		if( ! $field instanceof MIA_Author_Field ) {
+
+			return new WP_Error( 'invalid_type', 'Tried to register a field that was not a field object.' );
+
+		}
+
+		// Define collection name
+		$field->set_collection( $this->name );
+
+		// Retrieve name of field
+		$key = $field->get_name();
+
+		// Find free key if current key is taken
+		$i = 1;
+		while( array_key_exists( $key, $this->fields ) ){
+
+			$i++;
+			$key = $key . $i;
+
+		}
+
+		// Add field to collection
+		$this->fields[ $key ] = $field;
+
+		// Return 
+		if( isset( $this->fields[ $key ] ) ) {
+
+			return $key;
+
+		} else {
+
+			return new WP_Error( 'unknown_error', 'The field could not be registered; an unknown error occurred.' );
+
+		}
+
+	}
 
 
 	/**
@@ -98,10 +149,32 @@ class MIA_Author_Collection{
 
 
 	/**
-	 * Set up collection
+	 * Set up the collection.
 	 * 
 	 * @since 0.0.1
+	 * @param string $name The name of the collection.
+	 * @param string $title The human-readable title of the collection.
+	 * @param string $author The author of the collection.
+	 * @param string $description User-facing description or instructions.
 	 */
-	 function __construct(){}
+	function __construct( $name, $title, $author, $description ) {
+
+		if( ! empty( $name ) ) {
+			$this->name = $name;
+		}
+
+		if( ! empty( $title ) ) {
+			$this->title = $title;
+		}
+
+		if( ! empty( $author ) ) {
+			$this->author = $author;
+		}
+
+		if( ! empty( $description ) ) {
+			$this->description = $description;
+		}
+
+	}
 
 }

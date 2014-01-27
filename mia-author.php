@@ -24,4 +24,4 @@ include( 'class-mia-author-collection.php' );
  */
 include( 'class-mia-author-field.php' );
 
-new MIA_Author( true );
+$MIA_Author = new MIA_Author( true );

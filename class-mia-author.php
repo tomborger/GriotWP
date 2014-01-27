@@ -16,7 +16,7 @@ class MIA_Author{
 	 * @since 0.0.1
 	 * @var array
 	 */
-	public $collections;
+	public $collections = array();
 
 
 	/**
@@ -25,9 +25,45 @@ class MIA_Author{
 	 * @since 0.0.1
 	 * 
 	 * @param MIA_Author_Collection $collection The collection object to register. 
-	 * @return bool Returns true on success, WP_Error on failure.
+	 * @return string|WP_Error Returns the collection's key in the $collections 
+	 * array on success, WP_Error on failure.
 	 */
-	function register_collection( $collection ){}
+	function register_collection( $collection ){
+
+		// Bug out if this is not an MIA Author Collection object
+		if( ! $collection instanceof MIA_Author_Collection ) {
+
+			return new WP_Error( 'invalid_type', 'Tried to register a collection that was not a collection object.' );
+
+		}
+
+		// Retrieve name of collection
+		$key = $collection->get_name();
+
+		// Find free key if current key is taken
+		$i = 1;
+		while( array_key_exists( $key, $this->collections ) ){
+
+			$i++;
+			$key = $key . $i;
+
+		}
+
+		// Add collection to array
+		$this->collections[ $key ] = $collection;
+
+		// Return 
+		if( isset( $this->collections[ $key ] ) ) {
+
+			return $key;
+
+		} else {
+
+			return new WP_Error( 'unknown_error', 'The collection could not be registered; an unknown error occurred.' );
+
+		}
+
+	}
 
 
 	/**

@@ -16,7 +16,7 @@ class MIA_Author_Field{
 	 * @since 0.0.1
 	 * @var string
 	 */
-	public $name;
+	public $name = '';
 
 
 	/**
@@ -25,7 +25,7 @@ class MIA_Author_Field{
 	 * @since 0.0.1
 	 * @var string
 	 */
-	public $title;
+	public $title = '';
 
 
 	/**
@@ -35,7 +35,7 @@ class MIA_Author_Field{
 	 * @since 0.0.1
 	 * @var string
 	 */
-	public $record_type;
+	public $record_type = 'object';
 
 
 	/**
@@ -44,7 +44,7 @@ class MIA_Author_Field{
 	 * @since 0.0.1
 	 * @var string
 	 */
-	public $html;
+	public $html = '';
 
 
 	/**
@@ -53,7 +53,7 @@ class MIA_Author_Field{
 	 * @since 0.0.1
 	 * @var int
 	 */
-	public $order;
+	public $order = 1;
 
 
 	/**
@@ -62,7 +62,7 @@ class MIA_Author_Field{
 	 * @since 0.0.1
 	 * @var bool
 	 */
-	public $enabled;
+	public $enabled = true;
 
 
 	/**
@@ -75,10 +75,62 @@ class MIA_Author_Field{
 
 
 	/**
+	 * Retrieve the field's name property.
+	 * 
+	 * @since 0.0.1
+	 * @return string The name of the field.
+	 */
+	function get_name() {
+
+		return $this->name;
+
+	}
+
+
+	/**
+	 * Define the collection the name belongs to.
+	 * 
+	 * @since 0.0.1
+	 * @param string $name The name of the collection.
+	 */
+	function set_collection( $name ) {
+
+		$this->collection = $name;
+
+	}
+
+
+	/**
 	 * Set up field
 	 * 
 	 * @since 0.0.1
 	 */
-	 function __construct(){}
+	function __construct( $name, $title, $record_type, $html, $order = 1, $enabled = true ) {
+
+		if( ! empty( $name ) ) {
+			$this->name = $name;
+		}
+
+		if( ! empty( $title ) ) {
+			$this->title = $title;
+		}
+
+		if( ! empty( $record_type ) ) {
+			$this->record_type = $record_type;
+		}
+
+		if( ! empty( $html ) ) {
+			$this->html = $html;
+		}
+
+		if( isset( $order ) ) {
+			$this->order = $order;
+		}
+
+		if( isset( $enabled ) ) {
+			$this->enabled = $enabled;
+		}
+
+	}
 
 }
