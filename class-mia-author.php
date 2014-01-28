@@ -33,7 +33,7 @@ class MIA_Author{
 		// Bug out if this is not an MIA Author Collection object
 		if( ! $collection instanceof MIA_Author_Collection ) {
 
-			return new WP_Error( 'invalid_type', 'Tried to register a collection that was not a collection object.' );
+			return new WP_Error( 'invalid_type', __( 'Tried to register a collection that was not a collection object.', 'mia-author' ) );
 
 		}
 
@@ -59,7 +59,7 @@ class MIA_Author{
 
 		} else {
 
-			return new WP_Error( 'unknown_error', 'The collection could not be registered; an unknown error occurred.' );
+			return new WP_Error( 'unknown_error', __( 'The collection could not be registered; an unknown error occurred.', 'mia-author' ) );
 
 		}
 

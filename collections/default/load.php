@@ -5,7 +5,7 @@ $default_collection = new MIA_Author_Collection(
 	'default',
 	'Default Collection',
 	'Minneapolis Institute of Arts',
-	'The standard collection of fields for adding content to the Mia\'s open-source iPad presentation software (name TBD).'
+	__( 'The standard collection of fields for adding content to the Mia\'s open-source iPad presentation software (name TBD).', 'mia-author' )
 );
 
 /**

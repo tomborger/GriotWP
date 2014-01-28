@@ -5,6 +5,7 @@
  * Description: Provides a back end for populating the MIA's open-source iPad presentation software (name TBD).
  * Version: 0.0.2
  * Author: Minneapolis Institute of Arts
+ * Text Domain: mia-author
  * Author URI: http://new.artsmia.org
  * License: TBD
  */

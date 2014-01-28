@@ -81,7 +81,7 @@ class MIA_Author_Collection{
 		// Bug out if this is not an MIA Author Field object
 		if( ! $field instanceof MIA_Author_Field ) {
 
-			return new WP_Error( 'invalid_type', 'Tried to register a field that was not a field object.' );
+			return new WP_Error( 'invalid_type', __( 'Tried to register a field that was not a field object.', 'mia-author' ) );
 
 		}
 
@@ -110,7 +110,7 @@ class MIA_Author_Collection{
 
 		} else {
 
-			return new WP_Error( 'unknown_error', 'The field could not be registered; an unknown error occurred.' );
+			return new WP_Error( 'unknown_error', __( 'The field could not be registered; an unknown error occurred.', 'mia-author' ) );
 
 		}
 
