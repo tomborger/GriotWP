@@ -25,8 +25,7 @@ class MIA_Author{
 	 * @since 0.0.1
 	 * 
 	 * @param MIA_Author_Collection $collection The collection object to register. 
-	 * @return string|WP_Error Returns the collection's key in the $collections 
-	 * array on success, WP_Error on failure.
+	 * @return bool|WP_Error Returns true on success, WP_Error on failure.
 	 */
 	function register_collection( $collection ){
 
@@ -37,25 +36,25 @@ class MIA_Author{
 
 		}
 
-		// Retrieve name of collection
-		$key = $collection->get_name();
+		// Bug out if collection is incomplete; i.e. lacks a name or title
+		if( ! $collection->get_name() ){
 
-		// Find free key if current key is taken
-		$i = 1;
-		while( array_key_exists( $key, $this->collections ) ){
+			return new WP_Error( 'incomplete', __( 'Tried to register a collection with no name.', 'mia-author' ) );
 
-			$i++;
-			$key = $key . $i;
+		}
+		if( ! $collection->get_title() ){
+
+			return new WP_Error( 'incomplete', __( 'Tried to register a collection with no title.', 'mia-author' ) );
 
 		}
 
 		// Add collection to array
-		$this->collections[ $key ] = $collection;
+		$this->collections[] = $collection;
 
 		// Return 
-		if( isset( $this->collections[ $key ] ) ) {
+		if( in_array( $collection, $this->collections ) ) {
 
-			return $key;
+			return true;
 
 		} else {
 

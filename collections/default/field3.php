@@ -12,9 +12,11 @@ EOD;
 // Create field
 $field3 = new MIA_Author_Field(
 	'field3',
+	$html,
 	'The Third Field',
 	'object',
-	$html
+	3,
+	true
 );
 
 // Register field

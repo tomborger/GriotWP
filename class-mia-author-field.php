@@ -11,7 +11,7 @@
 class MIA_Author_Field{
 
 	/**
-	 * The internal name of the field.
+	 * The internal name of the field. Required.
 	 * 
 	 * @since 0.0.1
 	 * @var string
@@ -20,7 +20,16 @@ class MIA_Author_Field{
 
 
 	/**
-	 * The human-readable title of the field.
+	 * The HTML to render the field itself. Required.
+	 * 
+	 * @since 0.0.1
+	 * @var string
+	 */
+	public $html = '';
+
+
+	/**
+	 * The human-readable title of the field. 
 	 * 
 	 * @since 0.0.1
 	 * @var string
@@ -29,22 +38,13 @@ class MIA_Author_Field{
 
 
 	/**
-	 * The record type (i.e. object or story) to which the field should be 
-	 * appended.
+	 * The record type (i.e. object, view, story, page) to which the field should 
+	 * be appended.
 	 * 
 	 * @since 0.0.1
 	 * @var string
 	 */
 	public $record_type = 'object';
-
-
-	/**
-	 * The HTML to render the field itself.
-	 * 
-	 * @since 0.0.1
-	 * @var string
-	 */
-	public $html = '';
 
 
 	/**
@@ -88,6 +88,19 @@ class MIA_Author_Field{
 
 
 	/**
+	 * Retrieve the field's html property.
+	 * 
+	 * @since 0.0.1
+	 * @return string The HTML content of the field.
+	 */
+	function get_html() {
+
+		return $this->html;
+
+	}
+
+
+	/**
 	 * Define the collection the name belongs to.
 	 * 
 	 * @since 0.0.1
@@ -105,29 +118,29 @@ class MIA_Author_Field{
 	 * 
 	 * @since 0.0.1
 	 */
-	function __construct( $name, $title, $record_type, $html, $order = 1, $enabled = true ) {
+	function __construct( $name, $html, $title = null, $record_type = null, $order = null, $enabled = null ) {
 
-		if( ! empty( $name ) ) {
+		if( is_string( $name ) ) {
 			$this->name = $name;
 		}
 
-		if( ! empty( $title ) ) {
-			$this->title = $title;
-		}
-
-		if( ! empty( $record_type ) ) {
-			$this->record_type = $record_type;
-		}
-
-		if( ! empty( $html ) ) {
+		if( is_string( $html ) ) {
 			$this->html = $html;
 		}
 
-		if( isset( $order ) ) {
+		if( is_string( $title ) ) {
+			$this->title = $title;
+		}
+
+		if( is_string( $record_type ) ) {
+			$this->record_type = $record_type;
+		}
+
+		if( is_int( $order ) ) {
 			$this->order = $order;
 		}
 
-		if( isset( $enabled ) ) {
+		if( is_bool( $enabled ) ) {
 			$this->enabled = $enabled;
 		}
 

@@ -54,6 +54,7 @@ class MIA_Author_Collection{
 	 */
 	public $fields = array();
 
+
 	/**
 	 * Retrieve the collection's name property.
 	 * 
@@ -68,13 +69,25 @@ class MIA_Author_Collection{
 
 
 	/**
+	 * Retrieve the collection's title property.
+	 * 
+	 * @since 0.0.1
+	 * @return string The name of the collection.
+	 */
+	function get_title() {
+
+		return $this->title;
+
+	}
+
+
+	/**
 	 * Add a new field to the collection.
 	 * 
 	 * @since 0.0.1
 	 * 
 	 * @param MIA_Author_Field $field The field object to register. 
-	 * @return string|WP_Error Returns the field's key in the $fields array on 
-	 * success, WP_Error on failure.
+	 * @return bool|WP_Error Returns true on success, WP_Error on failure.
 	 */
 	function register_field( $field ){
 
@@ -85,28 +98,28 @@ class MIA_Author_Collection{
 
 		}
 
-		// Define collection name
-		$field->set_collection( $this->name );
+		// Bug out if field is incomplete; i.e. lacks a name or HTML content.
+		if( ! $field->get_name() ) {
 
-		// Retrieve name of field
-		$key = $field->get_name();
+			return new WP_Error( 'incomplete_field', __( 'Tried to register a field with no name.', 'mia-author' ) );
 
-		// Find free key if current key is taken
-		$i = 1;
-		while( array_key_exists( $key, $this->fields ) ){
+		}
+		if( ! $field->get_html() ) {
 
-			$i++;
-			$key = $key . $i;
+			return new WP_Error( 'incomplete_field', __( 'Tried to register a field with no HTML content.', 'mia-author' ) );
 
 		}
 
+		// Add collection name to field
+		$field->set_collection( $this->name );
+
 		// Add field to collection
-		$this->fields[ $key ] = $field;
+		$this->fields[] = $field;
 
 		// Return 
-		if( isset( $this->fields[ $key ] ) ) {
+		if( in_array( $field, $this->fields ) ) {
 
-			return $key;
+			return true;
 
 		} else {
 
@@ -152,26 +165,25 @@ class MIA_Author_Collection{
 	 * Set up the collection.
 	 * 
 	 * @since 0.0.1
-	 * @param string $name The name of the collection.
 	 * @param string $title The human-readable title of the collection.
 	 * @param string $author The author of the collection.
 	 * @param string $description User-facing description or instructions.
 	 */
-	function __construct( $name, $title, $author, $description ) {
+	function __construct( $name, $title, $author = null, $description = null ) {
 
-		if( ! empty( $name ) ) {
+		if( is_string( $name ) ) {
 			$this->name = $name;
 		}
 
-		if( ! empty( $title ) ) {
+		if( is_string( $title ) ) {
 			$this->title = $title;
 		}
 
-		if( ! empty( $author ) ) {
+		if( is_string( $author ) ) {
 			$this->author = $author;
 		}
 
-		if( ! empty( $description ) ) {
+		if( is_string( $description ) ) {
 			$this->description = $description;
 		}
 
