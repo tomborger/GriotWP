@@ -56,32 +56,6 @@ class MIA_Author_Collection{
 
 
 	/**
-	 * Retrieve the collection's name property.
-	 * 
-	 * @since 0.0.1
-	 * @return string The name of the collection.
-	 */
-	function get_name() {
-
-		return $this->name;
-
-	}
-
-
-	/**
-	 * Retrieve the collection's title property.
-	 * 
-	 * @since 0.0.1
-	 * @return string The name of the collection.
-	 */
-	function get_title() {
-
-		return $this->title;
-
-	}
-
-
-	/**
 	 * Add a new field to the collection.
 	 * 
 	 * @since 0.0.1
@@ -99,12 +73,12 @@ class MIA_Author_Collection{
 		}
 
 		// Bug out if field is incomplete; i.e. lacks a name or HTML content.
-		if( ! $field->get_name() ) {
+		if( ! $field->name ) {
 
 			return new WP_Error( 'incomplete_field', __( 'Tried to register a field with no name.', 'mia-author' ) );
 
 		}
-		if( ! $field->get_html() ) {
+		if( ! $field->html ) {
 
 			return new WP_Error( 'incomplete_field', __( 'Tried to register a field with no HTML content.', 'mia-author' ) );
 

@@ -37,12 +37,12 @@ class MIA_Author{
 		}
 
 		// Bug out if collection is incomplete; i.e. lacks a name or title
-		if( ! $collection->get_name() ){
+		if( ! $collection->name ){
 
 			return new WP_Error( 'incomplete', __( 'Tried to register a collection with no name.', 'mia-author' ) );
 
 		}
-		if( ! $collection->get_title() ){
+		if( ! $collection->title ){
 
 			return new WP_Error( 'incomplete', __( 'Tried to register a collection with no title.', 'mia-author' ) );
 

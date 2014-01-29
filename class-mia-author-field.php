@@ -75,32 +75,6 @@ class MIA_Author_Field{
 
 
 	/**
-	 * Retrieve the field's name property.
-	 * 
-	 * @since 0.0.1
-	 * @return string The name of the field.
-	 */
-	function get_name() {
-
-		return $this->name;
-
-	}
-
-
-	/**
-	 * Retrieve the field's html property.
-	 * 
-	 * @since 0.0.1
-	 * @return string The HTML content of the field.
-	 */
-	function get_html() {
-
-		return $this->html;
-
-	}
-
-
-	/**
 	 * Define the collection the name belongs to.
 	 * 
 	 * @since 0.0.1
