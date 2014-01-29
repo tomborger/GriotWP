@@ -123,7 +123,7 @@ class MIA_Author{
 			'label'               => __( 'object', 'mia-author' ),
 			'description'         => __( 'Represents a primary record in the application.', 'mia-author' ),
 			'labels'              => $labels,
-			'supports'            => array( 'title', 'editor', ),
+			'supports'            => array( 'title', ),
 			'hierarchical'        => false,
 			'public'              => true,
 			'show_ui'             => true,
@@ -170,7 +170,7 @@ class MIA_Author{
 			'label'               => __( 'story', 'mia-author' ),
 			'description'         => __( 'Represents secondary media related to a primary record in the application.', 'mia-author' ),
 			'labels'              => $labels,
-			'supports'            => array( 'title', 'editor', ),
+			'supports'            => array( 'title', ),
 			'hierarchical'        => false,
 			'public'              => true,
 			'show_ui'             => true,
@@ -192,6 +192,9 @@ class MIA_Author{
 
 	/**
 	 * Enqueue Angular and plugin scripts.
+	 *
+	 * Includes call to print_fields to ensure that this occurs after the 
+	 * miaAuthor script is registered.
 	 *
 	 * @since 0.0.1
 	 */
@@ -228,9 +231,22 @@ class MIA_Author{
 	 */
 	function print_fields() {
 
-		// TODO: Apply settings overrides to fields
+		// Return early if we're not on an object or story edit page.
 
-		// Copy all registered and enabled fields into one array
+		$screen = get_current_screen();
+
+		$ok_screen_ids = array( 'object', 'story', );
+
+		if( ! in_array( $screen->id, $ok_screen_ids ) ) {
+
+			return;
+
+		}
+
+		// TODO: Apply settings overrides to fields.
+
+		// Copy all registered and enabled fields into one array.
+
 		$fields = array();
 
 		foreach( $this->collections as $collection ) {
