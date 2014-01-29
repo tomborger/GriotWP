@@ -228,13 +228,34 @@ class MIA_Author{
 	 */
 	function print_fields() {
 
-		// TODO: Prepare field data
+		// TODO: Apply settings overrides to fields
+
+		// Copy all registered and enabled fields into one array
+		$fields = array();
+
+		foreach( $this->collections as $collection ) {
+
+			if( $collection->enabled ) {
+
+				foreach( $collection->fields as $field ) {
+
+					if( $field->enabled ) {
+
+						$fields[] = $field;
+
+					}
+
+				}
+
+			}
+
+		}
 
 		// Use wp_localize_scripts to print field data to page
 		wp_localize_script(
 			'miaAuthor',
 			'miaAuthorFields',
-			array( 'Prepared field data here' )
+			$fields
 		);
 
 	}

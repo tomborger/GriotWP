@@ -99,7 +99,7 @@ class MIA_Author_Field{
 		}
 
 		if( is_string( $html ) ) {
-			$this->html = $html;
+			$this->html = trim( preg_replace( '/\s+/', ' ', $html ) );
 		}
 
 		if( is_string( $title ) ) {

@@ -47,6 +47,15 @@ class MIA_Author_Collection{
 
 
 	/**
+	 * True if the collection is enabled.
+	 * 
+	 * @since 0.0.1
+	 * @var bool
+	 */
+	public $enabled = true;
+
+
+	/**
 	 * Array of fields registered to the collection.
 	 * 
 	 * @since 0.0.1
@@ -143,7 +152,7 @@ class MIA_Author_Collection{
 	 * @param string $author The author of the collection.
 	 * @param string $description User-facing description or instructions.
 	 */
-	function __construct( $name, $title, $author = null, $description = null ) {
+	function __construct( $name, $title, $author = null, $description = null, $enabled = null ) {
 
 		if( is_string( $name ) ) {
 			$this->name = $name;
@@ -159,6 +168,10 @@ class MIA_Author_Collection{
 
 		if( is_string( $description ) ) {
 			$this->description = $description;
+		}
+
+		if( is_bool( $enabled ) ) {
+			$this->enabled = $enabled;
 		}
 
 	}
