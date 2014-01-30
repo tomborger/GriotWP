@@ -200,6 +200,24 @@ class MIA_Author{
 	 */
 	function enqueue_scripts() { 
 
+		// Return early if we're not on an object or story edit page.
+		$screen = get_current_screen();
+
+		$ok_screen_ids = array( 'object', 'story', );
+
+		if( ! in_array( $screen->id, $ok_screen_ids ) ) {
+
+			return;
+
+		}
+
+		// Our styles
+		wp_enqueue_style(
+			'miaAuthor',
+			plugins_url( 'css/author.css', __FILE__ ),
+			false
+		);
+
 		// Angular core
 		wp_enqueue_script( 
 			'angular', 
@@ -218,35 +236,22 @@ class MIA_Author{
 			true
 		);
 
-		// Prepare and print field data
-		$this->print_fields();
+		// Prepare and print field data and template locations for Angular
+		$this->print_data();
 
 	}
 
 
 	/**
-	 * Print all registered fields to javascript.
+	 * Print template location and registered fields for Angular.
 	 *
 	 * @since 0.0.1
 	 */
-	function print_fields() {
-
-		// Return early if we're not on an object or story edit page.
-
-		$screen = get_current_screen();
-
-		$ok_screen_ids = array( 'object', 'story', );
-
-		if( ! in_array( $screen->id, $ok_screen_ids ) ) {
-
-			return;
-
-		}
+	function print_data() {
 
 		// TODO: Apply settings overrides to fields.
 
 		// Copy all registered and enabled fields into one array.
-
 		$fields = array();
 
 		foreach( $this->collections as $collection ) {
@@ -267,12 +272,11 @@ class MIA_Author{
 
 		}
 
-		// Use wp_localize_scripts to print field data to page
-		wp_localize_script(
-			'miaAuthor',
-			'miaAuthorFields',
-			$fields
-		);
+		// Make master array
+		$data = array( 'fields'=>$fields, 'template'=>plugins_url( '/templates/main.html', __FILE__ ) );
+
+		// Print data
+		wp_localize_script( 'miaAuthor', 'miaAuthorData', $data );
 
 	}
 
