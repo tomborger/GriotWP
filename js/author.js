@@ -1,34 +1,25 @@
 jQuery( document ).ready( function() { 
 
-	// Append app container to #post-body-content
-	// Is there a better way to do this?
-	jQuery( '#post-body-content' ).attr({
-		'ng-app':'miaAuthor',
-		'ng-controller':'miaAuthorCtrl'
-	}).append('<application></application>');
+	// Prepare WP environment
+	jQuery( '#post-body-content' )
 
-	// Define module
+		// Define Angular app and controller
+		.attr({
+			'ng-app':'miaAuthor',
+			'ng-controller':'miaAuthorCtrl'
+		})
+
+		// Create container for application
+		.append('<application></application>');
+
+	// Define main module
 	var miaAuthor = angular.module( 'miaAuthor', [] );
 
-	// Fields (as defined in PHP)
-	miaAuthor.factory( 'Fields', function() {
+	// Define main controller
+	miaAuthor.controller( 'miaAuthorCtrl', function( $scope ) { 
 
-		return miaAuthorData.fields;
-
-	});
-
-	// Template location
-	miaAuthor.factory( 'Templates', function() {
-
-		return miaAuthorData.templates;
-
-	});
-
-	// Controller
-	miaAuthor.controller( 'miaAuthorCtrl', function( $scope, Fields, Templates ) { 
-
-		$scope.fields = Fields;
-		$scope.templates = Templates;
+		$scope.recordType = miaAuthorData.recordType;
+		$scope.json = miaAuthorData.json;
 
 	});
 
@@ -38,17 +29,14 @@ jQuery( document ).ready( function() {
 		return {
 			restrict: 'E',
 			replace: true,
-			templateUrl: function(){
-				return miaAuthorData.template;
-			},
-			link: function( scope ) {
-				console.log( scope.fields );
-				console.log( scope.templates );
+			templateUrl: function() {
+				return miaAuthorData.templateUrl;
 			}
-		}
+		};
 
 	});
 
+	// Manually initialize Angular after WP environment is set up
 	angular.bootstrap( document, ['miaAuthor'] );
 
 });

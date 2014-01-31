@@ -15,14 +15,10 @@
  */
 include( 'class-mia-author.php' );
 
-/**
- * Class for collections of field definitions.
- */
-include( 'class-mia-author-collection.php' );
-
-/**
- * Class for individual field definitions.
- */
-include( 'class-mia-author-field.php' );
-
-$MIA_Author = new MIA_Author( true );
+// Config
+// NOTE: Template array key must match post type
+$templates = array(
+	'object'  =>   plugins_url( 'templates/object.html', __FILE__ ),
+	'story'   =>   plugins_url( 'templates/story.html', __FILE__ )
+);
+$MIA_Author = new MIA_Author( $templates );

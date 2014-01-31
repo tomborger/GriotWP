@@ -3,98 +3,12 @@
 /**
  * The main class for the plugin.
  * 
- * Provides getters and setters for collections as well as functions to set
- * up plugin and print field definitions to javascript.
+ * Sets up WordPress structures for working with records and exposes data for
+ * Angular through wp_localize_script. 
  *
  * @since 0.0.1
  */
 class MIA_Author{
-
-	/**
-	 * Array of field collections registered with the object.
-	 * 
-	 * @since 0.0.1
-	 * @var array
-	 */
-	public $collections = array();
-
-
-	/**
-	 * Add a new collection to $collections.
-	 * 
-	 * @since 0.0.1
-	 * 
-	 * @param MIA_Author_Collection $collection The collection object to register. 
-	 * @return bool|WP_Error Returns true on success, WP_Error on failure.
-	 */
-	function register_collection( $collection ){
-
-		// Bug out if this is not an MIA Author Collection object
-		if( ! $collection instanceof MIA_Author_Collection ) {
-
-			return new WP_Error( 'invalid_type', __( 'Tried to register a collection that was not a collection object.', 'mia-author' ) );
-
-		}
-
-		// Bug out if collection is incomplete; i.e. lacks a name or title
-		if( ! $collection->name ){
-
-			return new WP_Error( 'incomplete', __( 'Tried to register a collection with no name.', 'mia-author' ) );
-
-		}
-		if( ! $collection->title ){
-
-			return new WP_Error( 'incomplete', __( 'Tried to register a collection with no title.', 'mia-author' ) );
-
-		}
-
-		// Add collection to array
-		$this->collections[] = $collection;
-
-		// Return 
-		if( in_array( $collection, $this->collections ) ) {
-
-			return true;
-
-		} else {
-
-			return new WP_Error( 'unknown_error', __( 'The collection could not be registered; an unknown error occurred.', 'mia-author' ) );
-
-		}
-
-	}
-
-
-	/**
-	 * Remove a collection from $collections.
-	 * 
-	 * @since 0.0.1
-	 *
-	 * @param string $name The name of the collection to remove.
-	 * @return bool Returns true on success, WP_Error on failure.
-	 */
-	function unregister_collection( $name ) {}
-
-
-	/**
-	 * List collections currently registered with the object.
-	 * 
-	 * @since 0.0.1
-	 * 
-	 * @return array Returns a copy of the $collections property
-	 */
-	function get_collections() {}
-
-
-	/**
-	 * Check to see if a collection is currently registered.
-	 * 
-	 * @since 0.0.1
-	 * 
-	 * @return bool Returns true if collection is registered, otherwise false.
-	 */
-	function collection_exists() {}
-
 
 	/**
 	 * Register Object custom post type.
@@ -142,7 +56,6 @@ class MIA_Author{
 
 	}
 
-
 	/**
 	 * Register Story custom post type.
 	 *
@@ -189,16 +102,12 @@ class MIA_Author{
 
 	}
 
-
 	/**
-	 * Enqueue Angular and plugin scripts.
-	 *
-	 * Includes call to print_fields to ensure that this occurs after the 
-	 * miaAuthor script is registered.
+	 * Enqueue vendor and plugin scripts.
 	 *
 	 * @since 0.0.1
 	 */
-	function enqueue_scripts() { 
+	function enqueue_scripts_and_styles() { 
 
 		// Return early if we're not on an object or story edit page.
 		$screen = get_current_screen();
@@ -236,47 +145,36 @@ class MIA_Author{
 			true
 		);
 
-		// Prepare and print field data and template locations for Angular
-		$this->print_data();
+		// Print application data
+		$this->print_data( $screen->id );
 
 	}
 
-
 	/**
-	 * Print template location and registered fields for Angular.
-	 *
+	 * Expose record data and template URL to application
+	 * 
 	 * @since 0.0.1
 	 */
-	function print_data() {
+	function print_data( $screen_id ) {
 
-		// TODO: Apply settings overrides to fields.
+		// Grab $post variable
+		global $post;
 
-		// Copy all registered and enabled fields into one array.
-		$fields = array();
+		// Construct data for application
+		$miaAuthorData = array(
 
-		foreach( $this->collections as $collection ) {
+			'recordType'  => $screen_id,
+			'templateUrl' => $this->templates[ $screen_id ],
+			'json' => $post->post_content,
 
-			if( $collection->enabled ) {
+		);
 
-				foreach( $collection->fields as $field ) {
-
-					if( $field->enabled ) {
-
-						$fields[] = $field;
-
-					}
-
-				}
-
-			}
-
-		}
-
-		// Make master array
-		$data = array( 'fields'=>$fields, 'template'=>plugins_url( '/templates/main.html', __FILE__ ) );
-
-		// Print data
-		wp_localize_script( 'miaAuthor', 'miaAuthorData', $data );
+		// Print to page
+		wp_localize_script(
+			'miaAuthor',
+			'miaAuthorData',
+			$miaAuthorData
+		);
 
 	}
 
@@ -287,21 +185,17 @@ class MIA_Author{
 	 * @since 0.0.1
 	 * @param bool $load_default If true, load default fields from plugin.
 	 */
-	function __construct( $load_default = true ) {
+	function __construct( $templates ) {
+
+		// Register templates
+		$this->templates = $templates;
 
 		// Register Object and Story post types
 		add_action( 'init', array( $this, 'register_object_cpt' ) );
 		add_action( 'init', array( $this, 'register_story_cpt' ) );
 
-		// Queue scripts and field data to be processed and printed at page load
-		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
-
-		// If directed, include default field collection.
-		if( $load_default ) {
-
-			include( 'collections/default/load.php' );
-
-		}
+		// If this page is managed by the plugin, enqueue scripts and styles
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts_and_styles' ) );
 
 	}
 
