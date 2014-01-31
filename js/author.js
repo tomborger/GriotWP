@@ -10,7 +10,12 @@ jQuery( document ).ready( function() {
 		})
 
 		// Create container for application
-		.append('<application></application>');
+		.append( '<application></application>' )
+
+		// Link title to model
+		.find( '#title' ).attr({
+			'ng-model':'title'
+		});
 
 	// Define main module
 	var miaAuthor = angular.module( 'miaAuthor', [] );
@@ -19,7 +24,8 @@ jQuery( document ).ready( function() {
 	miaAuthor.controller( 'miaAuthorCtrl', function( $scope ) { 
 
 		$scope.recordType = miaAuthorData.recordType;
-		$scope.json = miaAuthorData.json;
+		$scope.title = miaAuthorData.title;
+		$scope.content = miaAuthorData.content;
 
 	});
 
