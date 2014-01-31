@@ -1,5 +1,14 @@
-#mia-author{
+#mia-author-data{
 	width:100%;
-	height:500px;
-	background:#ffffff;
+	height:200px;
+}
+.mia-author-field-wrap input,
+.mia-author-field-wrap textarea,
+.mia-author-field-wrap label {
+	width:100%;
+	display:block;
+}
+
+.mia-author-field-wrap{
+	margin-top:10px;
 }

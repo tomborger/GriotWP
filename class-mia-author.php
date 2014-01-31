@@ -166,7 +166,7 @@ class MIA_Author{
 			'recordType'  => $screen_id,
 			'templateUrl' => $this->templates[ $screen_id ],
 			'title'       => $post->post_title,
-			'content'     => $post->post_content,
+			'data'        => $post->post_content,
 
 		);
 
