@@ -23,29 +23,39 @@ jQuery( document ).ready( function() {
 	// Define main controller
 	miaAuthor.controller( 'miaAuthorCtrl', function( $scope ) { 
 
-		$scope.recordType = miaAuthorData.recordType;
 		$scope.data = miaAuthorData.data ? JSON.parse( miaAuthorData.data ) : {};
+		$scope.data.recordType = miaAuthorData.recordType;
 		$scope.data.title = miaAuthorData.title;
 
-		$scope.addRepeatable = function( prop ) {
+		$scope.addRepeatable = function( collection ) {
 
-			if( ! $scope.data.hasOwnProperty( prop ) ) {
+			if( ! $scope.data.hasOwnProperty( collection ) ) {
 
-				$scope.data[ prop ] = [];
+				$scope.data[ collection ] = [];
 
 			}
 
-			var repeater = $scope.data[ prop ];
+			var repeater = $scope.data[ collection ];
 
 			repeater.push( {} );
 
+			setTimeout( function(){
+				$scope.swiper.reInit();
+				$scope.swiper.swipeTo( $scope.swiper.slides.length - 1 )
+			}, 100 );
+
 		};
 
-		$scope.removeRepeatable = function( prop, index ) {
+		$scope.removeRepeatable = function( collection, index ) {
 
-			var repeater = $scope.data[ prop ];
+			var repeater = $scope.data[ collection ];
 
 			repeater.splice( index, 1 );
+
+			setTimeout( function(){
+				$scope.swiper.reInit();
+				$scope.swiper.swipeTo( $scope.swiper.activeIndex );
+			}, 200 );
 
 		}
 
@@ -86,7 +96,27 @@ jQuery( document ).ready( function() {
 			replace: true,
 			transclude: true,
 			template: function( elem, attrs ) {
-				return "<div class='mia-author-field-wrap'><label>" + attrs.label + "</label><div ng-click='addRepeatable( \"" + attrs.prop + "\" )' >Add</div><div class='mia-author-fieldgroup-wrap' ng-repeat='elem in data." + attrs.prop + "'><div ng-click='removeRepeatable( \"" + attrs.prop + "\", $index )'>Remove</div><div class='mia-author-fieldgroup-item' ng-transclude></div></div></div>"; 
+				return "<div class='mia-author-field-wrap'>" +
+					"<label>" + attrs.label + "</label>" +
+					"<div class='mia-author-button' ng-click='addRepeatable( \"" + attrs.collection + "\" )' >Add</div>" +
+					"<div class='swiper-container'>" +
+						"<div class='swiper-wrapper'>" +
+							"<div class='mia-author-fieldgroup-wrap swiper-slide' ng-repeat='elem in data." + attrs.collection + "'>" +
+								"<div class='mia-author-button' ng-click='removeRepeatable( \"" + attrs.collection + "\", $index )'>Remove</div>" +
+								"<div class='mia-author-fieldgroup-item' ng-transclude></div>" +
+							"</div>"+
+						"</div>" +
+					"</div>" +
+				"</div>"; 
+			},
+			link: function( scope, elem, attrs ) {
+				setTimeout( function(){ 
+					var swiper = new Swiper( '.swiper-container', {
+						slidesPerView: '1.05'
+					});
+					console.log( swiper.slides );
+					scope.swiper = swiper;
+				}, 200 );
 			}
 		};
 

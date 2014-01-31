@@ -8,7 +8,19 @@
 	width:100%;
 	display:block;
 }
-
 .mia-author-field-wrap{
 	margin-top:10px;
+}
+.mia-author-fieldgroup-wrap{
+}
+#mia-author .swiper-container{
+	width:100%;
+	height:200px;
+	border:1px solid #ccc;
+}
+#mia-author .swiper-slide{
+	padding:10px;
+	box-sizing:border-box;
+	border-right:1px solid #ddd;
+	border-left:1px solid #fff;
 }

@@ -120,11 +120,27 @@ class MIA_Author{
 
 		}
 
+		// Swiper styles
+		wp_enqueue_style(
+			'swiper',
+			plugins_url( 'css/vendor/idangerous.swiper.css', __FILE__ ),
+			false
+		);
+
 		// Our styles
 		wp_enqueue_style(
 			'miaAuthor',
 			plugins_url( 'css/author.css', __FILE__ ),
 			false
+		);
+
+		// Swiper core
+		wp_enqueue_script(
+			'swiper',
+			plugins_url( 'js/vendor/idangerous.swiper.min.js', __FILE__ ),
+			false,
+			null,
+			true
 		);
 
 		// Angular core
