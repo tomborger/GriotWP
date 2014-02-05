@@ -102,6 +102,51 @@ class MIA_Author{
 
 	}
 
+
+	/**
+	 * Check to see if directory of stories and objects has been saved in options
+	 * and builds it if necessary.
+	 *
+	 * @since 0.0.1
+	 */
+	function check_directory() {
+
+		if( ! get_option( 'mia_author_directory' ) ) {
+
+			$this->rebuild_directory();
+
+		}
+
+	}
+
+
+	/**
+	 * Build a directory of stories and objects for use in connection fields.
+	 *
+	 * @since 0.0.1
+	 */
+	function rebuild_directory() {
+
+		global $wpdb;
+
+		$objects_query = "SELECT ID, post_title FROM $wpdb->posts WHERE post_type = 'object' AND post_status = 'publish'";
+
+		$objects = $wpdb->get_results( $objects_query, ARRAY_A );
+
+		$stories_query = "SELECT ID, post_title FROM $wpdb->posts WHERE post_type = 'story' AND post_status = 'publish'";
+
+		$stories = $wpdb->get_results( $stories_query, ARRAY_A );
+
+		$directory = array(
+			'objects' => $objects,
+			'stories' => $stories,
+		);
+
+		update_option( 'mia_author_directory', $directory );
+
+	}
+
+
 	/**
 	 * Enqueue vendor and plugin scripts.
 	 *
@@ -197,6 +242,7 @@ class MIA_Author{
 			'templateUrl' => $this->templates[ $screen_id ],
 			'title'       => $post->post_title,
 			'data'        => $post->post_content,
+			'directory'		=> get_option( 'mia_author_directory' ),
 
 		);
 
@@ -224,6 +270,14 @@ class MIA_Author{
 		// Register Object and Story post types
 		add_action( 'init', array( $this, 'register_object_cpt' ) );
 		add_action( 'init', array( $this, 'register_story_cpt' ) );
+
+		// Generate record directory in options if it doesn't exist
+		$this->check_directory();
+
+		// Rebuild directory when post structure changes
+		add_action( 'save_post', array( $this, 'rebuild_directory' ) );
+		add_action( 'trash_post', array( $this, 'rebuild_directory' ) );
+		add_action( 'delete_post', array( $this, 'rebuild_directory' ) );
 
 		// If this page is managed by the plugin, enqueue scripts and styles
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts_and_styles' ) );

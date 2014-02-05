@@ -163,8 +163,12 @@ jQuery( document ).ready( function() {
 						fieldhtml = "<input type='text' ng-model='model." + attrs.name + "' />";
 						break;
 
+					case 'textarea':
+						fieldhtml = "<textarea ng-model='model." + attrs.name + "'></textarea>";
+						break;
+
 					case 'wysiwyg':
-						fieldhtml = "<textarea ng-model='model." + attrs.name + "' ck-editor ></textarea>";
+						fieldhtml = "<textarea ng-model='model." + attrs.name + "' ck-editor></textarea>";
 						break;
 
 				}
