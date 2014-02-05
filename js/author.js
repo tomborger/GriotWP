@@ -164,7 +164,7 @@ jQuery( document ).ready( function() {
 						break;
 
 					case 'wysiwyg':
-						fieldhtml = "<textarea ng-model='model." + attrs.name + "'></textarea>";
+						fieldhtml = "<textarea ng-model='model." + attrs.name + "' ck-editor ></textarea>";
 						break;
 
 				}
@@ -176,20 +176,66 @@ jQuery( document ).ready( function() {
 					"</div>" +
 				"</div>";
 
-			},
-			link: function( scope, elem, attrs ) {
-
-				if( attrs.type === 'wysiwyg' ) {
-
-					elem.find( 'textarea' ).ckeditor();
-
-				}
-
 			}
 
 		};
 
 	});
+
+
+	/**
+	 * ck-editor directive
+	 * 
+	 * Renders CKEditor on WYSIWYG fields and keeps model updated (CKEditor 
+	 * doesn't update textarea natively)
+	 *
+	 * See: http://stackoverflow.com/questions/11997246/bind-ckeditor-value-to-model-text-in-angularjs-and-rails
+	 */
+	miaAuthor.directive('ckEditor', function() {
+
+	  return {
+
+	  	restrict: 'A',
+	    require: ['?^repeater', '?ngModel'],
+	    link: function( scope, elem, attr, ctrls ) {
+
+	    	var repeater = ctrls[0];
+	    	var ngModel = ctrls[1];
+
+	      var ck = CKEDITOR.replace( elem[0] );
+
+	      if( repeater ) {
+	      	ck.on( 'instanceReady', function() {
+	      		repeater.refresh();
+	      	});
+	      }
+
+	      if( !ngModel ) {
+	      	return;
+	      }
+
+	      ck.on( 'pasteState', function() {
+
+	        scope.$apply( function() {
+
+	          ngModel.$setViewValue( ck.getData() );
+
+	        });
+
+	      });
+
+	      ngModel.$render = function( value ) {
+
+	        ck.setData( ngModel.$viewValue );
+
+	      };
+
+    	}
+  	
+  	};
+
+	});
+
 
 
 	/**
