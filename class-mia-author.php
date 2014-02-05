@@ -138,8 +138,8 @@ class MIA_Author{
 		$stories = $wpdb->get_results( $stories_query, ARRAY_A );
 
 		$directory = array(
-			'objects' => $objects,
-			'stories' => $stories,
+			'object' => $objects,
+			'story' => $stories,
 		);
 
 		update_option( 'mia_author_directory', $directory );
@@ -257,6 +257,50 @@ class MIA_Author{
 
 
 	/**
+	 * Register metabox for connections
+	 *
+	 * @since 0.0.1
+	 */
+	function register_connections_metabox() {
+
+		// Return early if we're not on an object or story edit page.
+		$screen = get_current_screen();
+
+		$ok_screen_ids = array( 'object', 'story', );
+
+		if( ! in_array( $screen->id, $ok_screen_ids ) ) {
+
+			return;
+
+		}
+
+		$opposite_records = $screen->id == 'object' ? 'Stories' : 'Objects';
+
+		// Add meta box
+		add_meta_box(
+			'mia_author_connections',
+			'Related ' . $opposite_records,
+			array( $this, 'connections_metabox_template' ),
+			$screen->id,
+			'side'
+		);
+
+	}
+
+
+	/**
+	 * Callback that prints Angular template to connections metabox.
+	 *
+	 * @since 0.0.1
+	 */
+	function connections_metabox_template() {
+
+		echo "<field name='connections' type='connection' />";
+
+	}
+
+
+	/**
 	 * Set up plugin
 	 * 
 	 * @since 0.0.1
@@ -281,6 +325,9 @@ class MIA_Author{
 
 		// If this page is managed by the plugin, enqueue scripts and styles
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts_and_styles' ) );
+
+		// Add connections metabox
+		add_action( 'add_meta_boxes', array( $this, 'register_connections_metabox' ) );
  
 	}
 

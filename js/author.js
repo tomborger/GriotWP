@@ -2,7 +2,7 @@ jQuery( document ).ready( function() {
 
 
 	// Prepare WP environment
-	jQuery( '#post-body-content' )
+	jQuery( '#poststuff' )
 
 		// Define Angular app and controller
 		.attr({
@@ -10,8 +10,8 @@ jQuery( document ).ready( function() {
 			'ng-controller':'miaAuthorCtrl'
 		})
 
-		// Create application container and hidden content field
-		.append( "<div id='mia-author'>" +
+		// Create main application container and hidden content field
+		.find( '#post-body-content' ).append( "<div id='mia-author'>" +
 					"<textarea name='content' id='mia-author-data'>{{ data | json }}</textarea>" +
 					"<fieldset></fieldset>" +
 				"</div>" )
@@ -97,6 +97,23 @@ jQuery( document ).ready( function() {
 
 
 	/**
+	 * getTitle filter
+	 *
+	 * For use in making connections between records. Returns the title if one
+	 * is set, otherwise 'Untitled (post #{ID})'
+	 */
+	miaAuthor.filter( 'getTitle', function() {
+
+	  return function( record ) {
+
+	    return record.post_title === '' ? 'Untitled (post #' + record.ID + ')' : record.post_title;
+
+	  };
+
+	});
+
+
+	/**
 	 * Application controller
 	 *
 	 * Initializes data object and scope chain
@@ -107,7 +124,11 @@ jQuery( document ).ready( function() {
 		// See MIA_Author::print_data() in class-mia-author.php
 		$scope.data = miaAuthorData.data ? JSON.parse( miaAuthorData.data ) : {};
 		$scope.data.title = miaAuthorData.title;
-		$scope.data.recordType = miaAuthorData.recordType;
+		$scope.ui = {
+			recordType: miaAuthorData.recordType,
+			oppositeRecordType: miaAuthorData.recordType == 'object' ? 'story' : 'object',
+			directory: miaAuthorData.directory,
+		}
 
 		// Initialize model chain
 		ModelChain.initialize( $scope );
@@ -148,7 +169,8 @@ jQuery( document ).ready( function() {
 			restrict: 'E',
 			replace: true,
 			scope: {
-				data:'='
+				data:'=',
+				ui:'='
 			},
 			controller: function( $scope, $element, $attrs, ModelChain ) {
 
@@ -156,6 +178,8 @@ jQuery( document ).ready( function() {
 
 			},
 			template: function( elem, attrs ) {
+
+				var fieldhtml;
 
 				switch( attrs.type ){
 
@@ -171,14 +195,25 @@ jQuery( document ).ready( function() {
 						fieldhtml = "<textarea ng-model='model." + attrs.name + "' ck-editor></textarea>";
 						break;
 
+					case 'connection':
+						fieldhtml = "<select ng-model='model." + attrs.name + "' ng-options='record.ID as ( record | getTitle ) for record in ui.directory[ ui.oppositeRecordType ]' multiple></select>";
+
 				}
 
-				return "<div class='mia-author-field-wrap' data='data'>" +
-					"<div class='mia-author-field-meta'><span class='mia-author-label'>" + attrs.label + "</span></div>" +
-					"<div class='mia-author-field'>" +
+				var templatehtml = "<div class='mia-author-field-wrap' data='data' ui='ui'>";
+
+				if( attrs.label ) {
+
+					templatehtml += "<div class='mia-author-field-meta' ><span class='mia-author-label'>" + attrs.label + "</span></div>";
+
+				}
+
+				templatehtml += "<div class='mia-author-field'>" +
 						fieldhtml +
 					"</div>" +
 				"</div>";
+
+				return templatehtml;
 
 			}
 
@@ -256,7 +291,8 @@ jQuery( document ).ready( function() {
 			restrict: 'E',
 			replace: true,
 			scope: {
-				data:'='
+				data:'=',
+				ui:'='
 			},
 			transclude: true,
 			controller: function( $scope, $element, $attrs, $timeout, ModelChain ) {
@@ -478,7 +514,7 @@ jQuery( document ).ready( function() {
 			},
 			template: function( elem, attrs ) {
 
-				return "<div class='mia-author-field-wrap' data='data'>" +
+				return "<div class='mia-author-field-wrap' data='data' ui='ui'>" +
 					"<p class='mia-author-field-meta'><span class='mia-author-label'>" + attrs.label + "</span> <a class='mia-author-button' ng-click='add( model." + attrs.name + ", \"" + attrs.name + "\" )' >Add " + attrs.labelSingular + "</a></p>" +
 					"<div class='mia-author-repeater'>" +
 						"<div class='mia-author-repeater-header' ng-show='repeater.slides.length !== 0'>" +
