@@ -134,6 +134,20 @@ class MIA_Author{
 			false
 		);
 
+		// CKEditor
+		wp_enqueue_script(
+			'ckeditor',
+			plugins_url( 'js/vendor/ckeditor/ckeditor.js', __FILE__ ),
+			false
+		);
+		wp_enqueue_script(
+			'ckeditor_adapter',
+			plugins_url( 'js/vendor/ckeditor/adapters/jquery.js', __FILE__ ),
+			array( 'ckeditor' ),
+			null,
+			true
+		);
+
 		// Swiper core
 		wp_enqueue_script(
 			'swiper',
@@ -213,7 +227,7 @@ class MIA_Author{
 
 		// If this page is managed by the plugin, enqueue scripts and styles
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts_and_styles' ) );
-
+ 
 	}
 
 }

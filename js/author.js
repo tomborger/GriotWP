@@ -176,6 +176,15 @@ jQuery( document ).ready( function() {
 					"</div>" +
 				"</div>";
 
+			},
+			link: function( scope, elem, attrs ) {
+
+				if( attrs.type === 'wysiwyg' ) {
+
+					elem.find( 'textarea' ).ckeditor();
+
+				}
+
 			}
 
 		};
@@ -290,7 +299,7 @@ jQuery( document ).ready( function() {
 				 * Reinitialize (and redraw) Swiper instance
 				 */
 				$scope.refresh = function() {
-					repeater.reInit();
+					$scope.repeater.reInit();
 					$scope.refreshNav();
 				}
 
@@ -551,5 +560,6 @@ jQuery( document ).ready( function() {
 	 * Manually initialize Angular after environment is set up
 	 */
 	angular.bootstrap( document, ['miaAuthor'] );
+
 
 });
