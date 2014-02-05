@@ -1,22 +1,23 @@
-<div id='mia-author'>
+<div>
 
-	<textarea name='content' id='mia-author-data'>{{ data | json }}</textarea>
+	<field label='TMS ID' name='tmsid' type='text' />
 
-	<field label='TMS ID'>
-		<input type='text' ng-model='data.tmsid' />
-	</field>
+	<field label='Description' name='description' type='wysiwyg' />
 
-	<field label='Description'>
-		<textarea ng-model='data.description'></textarea>
-	</field>
+	<field label='Sarah' name='sarah' type='text' />
 
-	<fieldgroup label='Views' collection='views'>
+	<repeater label='Views' label=plural='views' label-singular='view' name='views'>
 
-		<field label='Something'>
-			<input type='text' ng-model='data.views[$index].order' />
-			<input type='text' ng-model='data.views[$index].something' />
-		</field>
+		<field label='Title' name='repeatertitle' type='text' />
 
-	</fieldgroup>
+		<repeater label='Annotations' label-plural='annotations' label-singular='annotation' name='annotations'>
+
+			<field label='Something' name='something' type='wysiwyg' />
+
+		</repeater>
+
+		<field label='Image' name='image' type='text' />
+
+	</repeater>
 
 </div>
