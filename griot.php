@@ -3,7 +3,7 @@
 /**
  * Plugin Name: Griot
  * Description: Provides a back end for populating the MIA's open-source iPad presentation software (name TBD).
- * Version: 0.0.2
+ * Version: 0.0.1
  * Author: Minneapolis Institute of Arts
  * Text Domain: griot
  * Author URI: http://new.artsmia.org
