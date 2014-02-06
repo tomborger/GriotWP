@@ -111,7 +111,7 @@ class Griot{
 	 */
 	function check_directory() {
 
-		if( ! get_option( 'Griot_directory' ) ) {
+		if( ! get_option( 'griot_directory' ) ) {
 
 			$this->rebuild_directory();
 
@@ -142,7 +142,7 @@ class Griot{
 			'story' => $stories,
 		);
 
-		update_option( 'Griot_directory', $directory );
+		update_option( 'griot_directory', $directory );
 
 	}
 
@@ -242,7 +242,7 @@ class Griot{
 			'templateUrl' => $this->templates[ $screen_id ],
 			'title'       => $post->post_title,
 			'data'        => $post->post_content,
-			'directory'		=> get_option( 'Griot_directory' ),
+			'directory'		=> get_option( 'griot_directory' ),
 
 		);
 
@@ -263,25 +263,21 @@ class Griot{
 	 */
 	function register_connections_metabox() {
 
-		// Return early if we're not on an object or story edit page.
+		// Return early if we're not on an object page.
 		$screen = get_current_screen();
 
-		$ok_screen_ids = array( 'object', 'story', );
-
-		if( ! in_array( $screen->id, $ok_screen_ids ) ) {
+		if( $screen->id != 'object' ) {
 
 			return;
 
 		}
 
-		$opposite_records = $screen->id == 'object' ? 'Stories' : 'Objects';
-
 		// Add meta box
 		add_meta_box(
 			'griot-connections',
-			'Related ' . $opposite_records,
+			 __( 'Related Stories', 'griot' ),
 			array( $this, 'connections_metabox_template' ),
-			$screen->id,
+			'object',
 			'side'
 		);
 
