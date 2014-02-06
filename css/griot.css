@@ -2,23 +2,23 @@
  * WORKSPACE
  ******************************************************************************/
 
-#mia-author-data{
+#griot-data{
 	display:none;
 }
-#mia-author{
+#griot{
 	margin-bottom:25px;
 }
-.mia-author-field-wrap{
+.griot-field-wrap{
 	margin-top:20px;
 }
-.mia-author-field input,
-.mia-author-field textarea,
-.mia-author-field select{
+.griot-field input,
+.griot-field textarea,
+.griot-field select{
 	display:block;
 	width:100%;
 	max-width:100%;
 }
-.mia-author-field-meta{
+.griot-field-meta{
 	display:block;
 	width:100%;
 	margin:0px 0px 7px;
@@ -29,7 +29,7 @@
  * GENERAL UI ELEMENTS
  ******************************************************************************/
 
-.mia-author-label{
+.griot-label{
 	display:inline-block;
 	text-transform:uppercase;
 	font-weight:bold;
@@ -37,7 +37,7 @@
 	font-size:12px;
 	margin-right:7px;
 }
-.mia-author-button{
+.griot-button{
 	display:inline-block;
 	background-color:#f7f7f7;
 	border-color:#999;
@@ -53,7 +53,7 @@
 	border:1px solid #ccc;
 	cursor:pointer;
 }
-.mia-author-button:hover{
+.griot-button:hover{
 	background-color:#fafafa;
 	border-color:#999;
 	color:#222;
@@ -64,15 +64,15 @@
  * REPEATERS
  ******************************************************************************/
 
-.mia-author-repeater{
+.griot-repeater{
 	border-right:1px solid #ccc;
 	border-left:1px solid #ccc;
 }
-.mia-author-repeater.collapsed{
+.griot-repeater.collapsed{
 	border-top:0px;
 	border-bottom:0px;
 }
-.mia-author-repeater-header{
+.griot-repeater-header{
 	height:30px;
 	width:100%;
 	position:relative;
@@ -83,7 +83,7 @@
 	box-shadow:0px 2px 4px rgba(0,0,0,0.13);
 	border-top:1px solid #ccc;
 }
-.mia-author-repeater-nav{
+.griot-repeater-nav{
 	position:absolute;
 	display:block;
 	width:30px;
@@ -93,30 +93,30 @@
 	line-height:30px;
 	cursor:pointer;
 }
-.mia-author-repeater-nav:hover{
+.griot-repeater-nav:hover{
 	background-color:#fafafa;
 	color:#222;
 }
-.mia-author-repeater-nav.disabled,
-.mia-author-repeater-nav.disabled:hover{
+.griot-repeater-nav.disabled,
+.griot-repeater-nav.disabled:hover{
 	background-color:transparent;
 	color:#ccc;
 }
-.mia-author-repeater-nav.prev{
+.griot-repeater-nav.prev{
 	left:0;
 	border-right:1px solid #ddd;
 }
-.mia-author-repeater-nav.next{
+.griot-repeater-nav.next{
 	right:0;
 	border-left:1px solid #ddd;
 }
-.mia-author-repeater-pagination{
+.griot-repeater-pagination{
 	position:absolute;
 	width:100%;
 	height:30px;
 	text-align:center;
 }
-.mia-author-repeater-bullet{
+.griot-repeater-bullet{
 	background-color:#999;
 	border-radius:1000px;
 	width:12px;
@@ -128,10 +128,10 @@
 	vertical-align:middle;
 	cursor:pointer;
 }
-.mia-author-repeater-bullet.active{
+.griot-repeater-bullet.active{
 	background-color:#333;
 }
-.mia-author-repeater-container{
+.griot-repeater-container{
 	position:relative;
 	width:100%;
 	background-color:#ccc;
@@ -140,7 +140,7 @@
 	box-shadow:inset 0px 0px 6px rgba(0,0,0,0.13);
 
 }
-.mia-author-repeater-item{
+.griot-repeater-item{
 	position:relative;
 	width:100%;
 	padding:10px;
@@ -153,7 +153,7 @@
 	box-shadow:0px 0px 8px rgba(0,0,0,0.13);
 	border-bottom:1px solid #ccc;
 }
-.mia-author-repeater-meta-wrap{
+.griot-repeater-meta-wrap{
 	position:absolute;
 	top:0;
 	left:0;
@@ -161,7 +161,7 @@
 	width:30px;
 	background-color:#666;
 }
-.mia-author-repeater-meta{
+.griot-repeater-meta{
 	position:absolute;
 	display:block;
 	width:500px;
@@ -180,7 +180,7 @@
 	font-size:12px;
 	font-weight:bold;
 }
-.mia-author-repeater-menu-toggle{
+.griot-repeater-menu-toggle{
 	position:absolute;
 	display:block;
 	top:0;
@@ -195,12 +195,12 @@
 	cursor:pointer;
 	border-bottom:1px solid #ccc;
 }
-.mia-author-repeater-menu-toggle:hover,
-.mia-author-repeater-menu-toggle.active{
+.griot-repeater-menu-toggle:hover,
+.griot-repeater-menu-toggle.active{
 	background-color:#333;
 	color:#fafafa;
 }
-.mia-author-repeater-menu{
+.griot-repeater-menu{
 	position:absolute;
 	top:0;
 	left:30px;
@@ -213,21 +213,21 @@
 	box-shadow:2px 0px 6px rgba(0,0,0,0.25);
 	z-index:10;
 }
-.mia-author-repeater-menu-option{
+.griot-repeater-menu-option{
 	display:block;
 	height:30px;
 	white-space:nowrap;
 	border-bottom:1px solid #ccc;
 	cursor:pointer;
 }
-.mia-author-repeater-menu-option:hover{
+.griot-repeater-menu-option:hover{
 	background-color:#333;
 }
-.mia-author-repeater-menu-option.disabled,
-.mia-author-repeater-menu-option.disabled:hover{
+.griot-repeater-menu-option.disabled,
+.griot-repeater-menu-option.disabled:hover{
 	background-color:#ccc;
 }
-.mia-author-repeater-menu-option-icon{
+.griot-repeater-menu-option-icon{
 	display:inline-block;
 	width:30px;
 	height:30px;
@@ -237,7 +237,7 @@
 	font-size:14px;
 	color:#f7f7f7;
 }
-.mia-author-repeater-menu-option-label{
+.griot-repeater-menu-option-label{
 	white-space:nowrap;
 	display:inline-block;
 	font-size:11px;
@@ -247,11 +247,11 @@
 	line-height:30px;
 	vertical-align:middle;
 }
-.mia-author-repeater-menu-option-icon:hover,
-.mia-author-repeater-menu-option-label:hover{
+.griot-repeater-menu-option-icon:hover,
+.griot-repeater-menu-option-label:hover{
 	color:#fafafa;
 }
-.mia-author-repeater-fields{
+.griot-repeater-fields{
 	width:100%;
 	padding-left:30px;
 	-webkit-box-sizing:border-box;
@@ -263,6 +263,6 @@
 /*
  * CONNECTIONS
  ******************************************************************************/
-#mia_author_connections select{
+#griot-connections select{
 	min-height:150px;
 }

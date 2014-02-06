@@ -6,13 +6,13 @@ jQuery( document ).ready( function() {
 
 		// Define Angular app and controller
 		.attr({
-			'ng-app':'miaAuthor',
-			'ng-controller':'miaAuthorCtrl'
+			'ng-app':'griot',
+			'ng-controller':'griotCtrl'
 		})
 
 		// Create main application container and hidden content field
-		.find( '#post-body-content' ).append( "<div id='mia-author'>" +
-					"<textarea name='content' id='mia-author-data'>{{ data | json }}</textarea>" +
+		.find( '#post-body-content' ).append( "<div id='griot'>" +
+					"<textarea name='content' id='griot-data'>{{ data | json }}</textarea>" +
 					"<fieldset></fieldset>" +
 				"</div>" )
 
@@ -25,7 +25,7 @@ jQuery( document ).ready( function() {
 	/**
 	 * Main application module
 	 */
-	var miaAuthor = angular.module( 'miaAuthor', [] );
+	var griot = angular.module( 'griot', [] );
 
 
 	/**
@@ -50,7 +50,7 @@ jQuery( document ).ready( function() {
 	 * instead bind the field to the property on the LOCAL scope called 'model'.
 	 * Many Bothans died to bring us this information.
 	 */
-	miaAuthor.factory( 'ModelChain', function() {
+	griot.factory( 'ModelChain', function() {
 
 		return {
 
@@ -102,7 +102,7 @@ jQuery( document ).ready( function() {
 	 * For use in making connections between records. Returns the title if one
 	 * is set, otherwise 'Untitled (post #{ID})'
 	 */
-	miaAuthor.filter( 'getTitle', function() {
+	griot.filter( 'getTitle', function() {
 
 	  return function( record ) {
 
@@ -118,16 +118,16 @@ jQuery( document ).ready( function() {
 	 *
 	 * Initializes data object and scope chain
 	 */
-	miaAuthor.controller( 'miaAuthorCtrl', function( $scope, ModelChain ) { 
+	griot.controller( 'griotCtrl', function( $scope, ModelChain ) { 
 
 		// Initialize data object and load previously saved data into model. 
-		// See MIA_Author::print_data() in class-mia-author.php
-		$scope.data = miaAuthorData.data ? JSON.parse( miaAuthorData.data ) : {};
-		$scope.data.title = miaAuthorData.title;
+		// See Griot::print_data() in class-griot.php
+		$scope.data = griotData.data ? JSON.parse( griotData.data ) : {};
+		$scope.data.title = griotData.title;
 		$scope.ui = {
-			recordType: miaAuthorData.recordType,
-			oppositeRecordType: miaAuthorData.recordType == 'object' ? 'story' : 'object',
-			directory: miaAuthorData.directory,
+			recordType: griotData.recordType,
+			oppositeRecordType: griotData.recordType == 'object' ? 'story' : 'object',
+			directory: griotData.directory,
 		}
 
 		// Initialize model chain
@@ -141,14 +141,14 @@ jQuery( document ).ready( function() {
 	 * 
 	 * Renders fields from template
 	 */
-	miaAuthor.directive( 'fieldset', function() {
+	griot.directive( 'fieldset', function() {
 
 		return{
 
 			restrict: 'E',
 			replace: true,
 			templateUrl: function() {
-				return miaAuthorData.templateUrl;
+				return griotData.templateUrl;
 			}
 
 		}
@@ -162,7 +162,7 @@ jQuery( document ).ready( function() {
 	 * Renders individual <field> elements into container, label, and input and 
 	 * populates ng-model attributes.
 	 */
-	miaAuthor.directive( 'field', function() {
+	griot.directive( 'field', function() {
 
 		return {
 
@@ -200,15 +200,15 @@ jQuery( document ).ready( function() {
 
 				}
 
-				var templatehtml = "<div class='mia-author-field-wrap' data='data' ui='ui'>";
+				var templatehtml = "<div class='griot-field-wrap' data='data' ui='ui'>";
 
 				if( attrs.label ) {
 
-					templatehtml += "<div class='mia-author-field-meta' ><span class='mia-author-label'>" + attrs.label + "</span></div>";
+					templatehtml += "<div class='griot-field-meta' ><span class='griot-label'>" + attrs.label + "</span></div>";
 
 				}
 
-				templatehtml += "<div class='mia-author-field'>" +
+				templatehtml += "<div class='griot-field'>" +
 						fieldhtml +
 					"</div>" +
 				"</div>";
@@ -230,7 +230,7 @@ jQuery( document ).ready( function() {
 	 *
 	 * See: http://stackoverflow.com/questions/11997246/bind-ckeditor-value-to-model-text-in-angularjs-and-rails
 	 */
-	miaAuthor.directive('ckEditor', function() {
+	griot.directive('ckEditor', function() {
 
 	  return {
 
@@ -284,7 +284,7 @@ jQuery( document ).ready( function() {
 	 * underlying Swiper object (which is stored in the local scope). Most of
 	 * these methods are internal, but some may be called from other directives.
 	 */
-	miaAuthor.directive( 'repeater', function() {
+	griot.directive( 'repeater', function() {
 
 		return {
 
@@ -329,9 +329,9 @@ jQuery( document ).ready( function() {
 
 					var repeater = repeaterElement.find( '.swiper-container' ).first().swiper({
 						calculateHeight: true,
-						pagination: repeaterElement.find( '.mia-author-repeater-pagination' ).first()[0],
+						pagination: repeaterElement.find( '.griot-repeater-pagination' ).first()[0],
 						paginationClickable: true,
-						paginationElementClass: 'mia-author-repeater-bullet',
+						paginationElementClass: 'griot-repeater-bullet',
 						paginationActiveClass: 'active',
 						onSlideChangeStart: function(){
       				$scope.refreshNav();
@@ -514,36 +514,36 @@ jQuery( document ).ready( function() {
 			},
 			template: function( elem, attrs ) {
 
-				return "<div class='mia-author-field-wrap' data='data' ui='ui'>" +
-					"<p class='mia-author-field-meta'><span class='mia-author-label'>" + attrs.label + "</span> <a class='mia-author-button' ng-click='add( model." + attrs.name + ", \"" + attrs.name + "\" )' >Add " + attrs.labelSingular + "</a></p>" +
-					"<div class='mia-author-repeater'>" +
-						"<div class='mia-author-repeater-header' ng-show='repeater.slides.length !== 0'>" +
-							"<div class='mia-author-repeater-pagination'></div>" +
-							"<span class='mia-author-repeater-nav prev' ng-click='repeater.swipePrev()' ng-class=\"{'disabled':prevDisabled}\">◀</span>" +
-							"<span class='mia-author-repeater-nav next' ng-click='repeater.swipeNext()' ng-class=\"{'disabled':nextDisabled}\">▶</span>" +
+				return "<div class='griot-field-wrap' data='data' ui='ui'>" +
+					"<p class='griot-field-meta'><span class='griot-label'>" + attrs.label + "</span> <a class='griot-button' ng-click='add( model." + attrs.name + ", \"" + attrs.name + "\" )' >Add " + attrs.labelSingular + "</a></p>" +
+					"<div class='griot-repeater'>" +
+						"<div class='griot-repeater-header' ng-show='repeater.slides.length !== 0'>" +
+							"<div class='griot-repeater-pagination'></div>" +
+							"<span class='griot-repeater-nav prev' ng-click='repeater.swipePrev()' ng-class=\"{'disabled':prevDisabled}\">◀</span>" +
+							"<span class='griot-repeater-nav next' ng-click='repeater.swipeNext()' ng-class=\"{'disabled':nextDisabled}\">▶</span>" +
 						"</div>" +
-						"<div class='mia-author-repeater-container swiper-container'>" +
-							"<div class='mia-author-repeater-wrapper swiper-wrapper'>" +
-								"<div class='mia-author-repeater-item swiper-slide' ng-repeat='elem in model." + attrs.name + "'>" +
-									"<div class='mia-author-repeater-meta-wrap'>"+
-										"<span class='mia-author-repeater-meta'>" + attrs.labelSingular + "&nbsp;&nbsp;{{$index + 1}}&nbsp;&nbsp;of&nbsp;&nbsp;{{repeater.slides.length}}</span>" +
-										"<a class='mia-author-repeater-menu-toggle' ng-click='toggleMenu()' ng-class='{active:showMenu}'>☰</a>" +
-										"<div class='mia-author-repeater-menu' ng-show='showMenu'>" +
-											"<div class='mia-author-repeater-menu-option'>" +
-												"<a class='mia-author-repeater-menu-option-icon' ng-click='remove(model." + attrs.name + ", $index)'>✕</a>" +
-												"<a class='mia-author-repeater-menu-option-label' ng-click='remove(model." + attrs.name + ", $index)'>Delete " + attrs.labelSingular + "</a>" +
+						"<div class='griot-repeater-container swiper-container'>" +
+							"<div class='griot-repeater-wrapper swiper-wrapper'>" +
+								"<div class='griot-repeater-item swiper-slide' ng-repeat='elem in model." + attrs.name + "'>" +
+									"<div class='griot-repeater-meta-wrap'>"+
+										"<span class='griot-repeater-meta'>" + attrs.labelSingular + "&nbsp;&nbsp;{{$index + 1}}&nbsp;&nbsp;of&nbsp;&nbsp;{{repeater.slides.length}}</span>" +
+										"<a class='griot-repeater-menu-toggle' ng-click='toggleMenu()' ng-class='{active:showMenu}'>☰</a>" +
+										"<div class='griot-repeater-menu' ng-show='showMenu'>" +
+											"<div class='griot-repeater-menu-option'>" +
+												"<a class='griot-repeater-menu-option-icon' ng-click='remove(model." + attrs.name + ", $index)'>✕</a>" +
+												"<a class='griot-repeater-menu-option-label' ng-click='remove(model." + attrs.name + ", $index)'>Delete " + attrs.labelSingular + "</a>" +
 											"</div>" +											
-											"<div class='mia-author-repeater-menu-option' ng-class='{disabled:$index === 0}'>" +
-												"<a class='mia-author-repeater-menu-option-icon' ng-click='rearrange(model." + attrs.name + ", $index, $index - 1)'>⤺</a>" +
-												"<a class='mia-author-repeater-menu-option-label' ng-click='rearrange(model." + attrs.name + ", $index, $index - 1)'>Shift left</a>" +
+											"<div class='griot-repeater-menu-option' ng-class='{disabled:$index === 0}'>" +
+												"<a class='griot-repeater-menu-option-icon' ng-click='rearrange(model." + attrs.name + ", $index, $index - 1)'>⤺</a>" +
+												"<a class='griot-repeater-menu-option-label' ng-click='rearrange(model." + attrs.name + ", $index, $index - 1)'>Shift left</a>" +
 											"</div>" +
-											"<div class='mia-author-repeater-menu-option' ng-class='{disabled:$index === repeater.slides.length - 1}'>" +
-												"<a class='mia-author-repeater-menu-option-icon' ng-click='rearrange(model." + attrs.name + ", $index, $index + 1)'>⤻</a>" +
-												"<a class='mia-author-repeater-menu-option-label' ng-click='rearrange(model." + attrs.name + ", $index, $index + 1)'>Shift right</a>" +
+											"<div class='griot-repeater-menu-option' ng-class='{disabled:$index === repeater.slides.length - 1}'>" +
+												"<a class='griot-repeater-menu-option-icon' ng-click='rearrange(model." + attrs.name + ", $index, $index + 1)'>⤻</a>" +
+												"<a class='griot-repeater-menu-option-label' ng-click='rearrange(model." + attrs.name + ", $index, $index + 1)'>Shift right</a>" +
 											"</div>" +
 										"</div>" +
 									"</div>" +
-									"<div class='mia-author-repeater-fields' ng-transclude></div>" +
+									"<div class='griot-repeater-fields' ng-transclude></div>" +
 								"</div>"+
 							"</div>" +
 						"</div>" +
@@ -565,9 +565,9 @@ jQuery( document ).ready( function() {
 				// Close menu on click outside of element
 				jQuery( window ).on( 'click', function( e ) {
 
-					var thisMenu = elem.find( '.mia-author-repeater-meta-wrap' );
+					var thisMenu = elem.find( '.griot-repeater-meta-wrap' );
 
-					if( ! jQuery( e.target ).closest( '.mia-author-repeater-meta-wrap' ).is( thisMenu ) ) {
+					if( ! jQuery( e.target ).closest( '.griot-repeater-meta-wrap' ).is( thisMenu ) ) {
 
 						scope.$apply(
 							scope.showMenu = false
@@ -585,13 +585,13 @@ jQuery( document ).ready( function() {
 	
 
 	/**
-	 * .mia-author-repeater-fields directive
+	 * .griot-repeater-fields directive
 	 *
 	 * Reinitializes Swiper instance of parent repeater when the last repeater
 	 * item is printed and when height changes, and controls tabbing behavior
 	 * between fields in separate repeater items
 	 */
-	miaAuthor.directive( 'miaAuthorRepeaterFields', function() {
+	griot.directive( 'griotRepeaterFields', function() {
 
 		return {
 
@@ -645,7 +645,7 @@ jQuery( document ).ready( function() {
 	/**
 	 * Manually initialize Angular after environment is set up
 	 */
-	angular.bootstrap( document, ['miaAuthor'] );
+	angular.bootstrap( document, ['griot'] );
 
 
 });

@@ -8,7 +8,7 @@
  *
  * @since 0.0.1
  */
-class MIA_Author{
+class Griot{
 
 	/**
 	 * Register Object custom post type.
@@ -18,24 +18,24 @@ class MIA_Author{
 	function register_object_cpt() {
 
 		$labels = array(
-			'name'                => _x( 'Objects', 'Post Type General Name', 'mia-author' ),
-			'singular_name'       => _x( 'Object', 'Post Type Singular Name', 'mia-author' ),
-			'menu_name'           => _x( 'Objects', 'Post Type Menu Name', 'mia-author' ),
-			'parent_item_colon'   => __( 'Parent Object:', 'mia-author' ),
-			'all_items'           => __( 'All Objects', 'mia-author' ),
-			'view_item'           => __( 'View Object', 'mia-author' ),
-			'add_new_item'        => __( 'Add New Object', 'mia-author' ),
-			'add_new'             => __( 'Add New', 'mia-author' ),
-			'edit_item'           => __( 'Edit Object', 'mia-author' ),
-			'update_item'         => __( 'Update Object', 'mia-author' ),
-			'search_items'        => __( 'Search Objects', 'mia-author' ),
-			'not_found'           => __( 'Not found', 'mia-author' ),
-			'not_found_in_trash'  => __( 'Not found in Trash', 'mia-author' ),
+			'name'                => _x( 'Objects', 'Post Type General Name', 'griot' ),
+			'singular_name'       => _x( 'Object', 'Post Type Singular Name', 'griot' ),
+			'menu_name'           => _x( 'Objects', 'Post Type Menu Name', 'griot' ),
+			'parent_item_colon'   => __( 'Parent Object:', 'griot' ),
+			'all_items'           => __( 'All Objects', 'griot' ),
+			'view_item'           => __( 'View Object', 'griot' ),
+			'add_new_item'        => __( 'Add New Object', 'griot' ),
+			'add_new'             => __( 'Add New', 'griot' ),
+			'edit_item'           => __( 'Edit Object', 'griot' ),
+			'update_item'         => __( 'Update Object', 'griot' ),
+			'search_items'        => __( 'Search Objects', 'griot' ),
+			'not_found'           => __( 'Not found', 'griot' ),
+			'not_found_in_trash'  => __( 'Not found in Trash', 'griot' ),
 		);
 
 		$args = array(
-			'label'               => __( 'object', 'mia-author' ),
-			'description'         => __( 'Represents a primary record in the application.', 'mia-author' ),
+			'label'               => __( 'object', 'griot' ),
+			'description'         => __( 'Represents a primary record in the application.', 'griot' ),
 			'labels'              => $labels,
 			'supports'            => array( 'title', ),
 			'hierarchical'        => false,
@@ -64,24 +64,24 @@ class MIA_Author{
 	function register_story_cpt() {
 
 		$labels = array(
-			'name'                => _x( 'Stories', 'Post Type General Name', 'mia-author' ),
-			'singular_name'       => _x( 'Story', 'Post Type Singular Name', 'mia-author' ),
-			'menu_name'           => _x( 'Stories', 'Post Type Menu Name', 'mia-author' ),
-			'parent_item_colon'   => __( 'Parent Story:', 'mia-author' ),
-			'all_items'           => __( 'All Stories', 'mia-author' ),
-			'view_item'           => __( 'View Story', 'mia-author' ),
-			'add_new_item'        => __( 'Add New Story', 'mia-author' ),
-			'add_new'             => __( 'Add New', 'mia-author' ),
-			'edit_item'           => __( 'Edit Story', 'mia-author' ),
-			'update_item'         => __( 'Update Story', 'mia-author' ),
-			'search_items'        => __( 'Search Stories', 'mia-author' ),
-			'not_found'           => __( 'Not found', 'mia-author' ),
-			'not_found_in_trash'  => __( 'Not found in Trash', 'mia-author' ),
+			'name'                => _x( 'Stories', 'Post Type General Name', 'griot' ),
+			'singular_name'       => _x( 'Story', 'Post Type Singular Name', 'griot' ),
+			'menu_name'           => _x( 'Stories', 'Post Type Menu Name', 'griot' ),
+			'parent_item_colon'   => __( 'Parent Story:', 'griot' ),
+			'all_items'           => __( 'All Stories', 'griot' ),
+			'view_item'           => __( 'View Story', 'griot' ),
+			'add_new_item'        => __( 'Add New Story', 'griot' ),
+			'add_new'             => __( 'Add New', 'griot' ),
+			'edit_item'           => __( 'Edit Story', 'griot' ),
+			'update_item'         => __( 'Update Story', 'griot' ),
+			'search_items'        => __( 'Search Stories', 'griot' ),
+			'not_found'           => __( 'Not found', 'griot' ),
+			'not_found_in_trash'  => __( 'Not found in Trash', 'griot' ),
 		);
 
 		$args = array(
-			'label'               => __( 'story', 'mia-author' ),
-			'description'         => __( 'Represents secondary media related to a primary record in the application.', 'mia-author' ),
+			'label'               => __( 'story', 'griot' ),
+			'description'         => __( 'Represents secondary media related to a primary record in the application.', 'griot' ),
 			'labels'              => $labels,
 			'supports'            => array( 'title', ),
 			'hierarchical'        => false,
@@ -111,7 +111,7 @@ class MIA_Author{
 	 */
 	function check_directory() {
 
-		if( ! get_option( 'mia_author_directory' ) ) {
+		if( ! get_option( 'Griot_directory' ) ) {
 
 			$this->rebuild_directory();
 
@@ -142,7 +142,7 @@ class MIA_Author{
 			'story' => $stories,
 		);
 
-		update_option( 'mia_author_directory', $directory );
+		update_option( 'Griot_directory', $directory );
 
 	}
 
@@ -174,8 +174,8 @@ class MIA_Author{
 
 		// Our styles
 		wp_enqueue_style(
-			'miaAuthor',
-			plugins_url( 'css/author.css', __FILE__ ),
+			'griot',
+			plugins_url( 'css/griot.css', __FILE__ ),
 			false
 		);
 
@@ -213,8 +213,8 @@ class MIA_Author{
 
 		// Our controller
 		wp_enqueue_script(
-			'miaAuthor',
-			plugins_url( 'js/author.js', __FILE__ ),
+			'griot',
+			plugins_url( 'js/griot.js', __FILE__ ),
 			false,
 			null,
 			true
@@ -236,21 +236,21 @@ class MIA_Author{
 		global $post;
 
 		// Construct data for application
-		$miaAuthorData = array(
+		$griotData = array(
 
 			'recordType'  => $screen_id,
 			'templateUrl' => $this->templates[ $screen_id ],
 			'title'       => $post->post_title,
 			'data'        => $post->post_content,
-			'directory'		=> get_option( 'mia_author_directory' ),
+			'directory'		=> get_option( 'Griot_directory' ),
 
 		);
 
 		// Print to page
 		wp_localize_script(
-			'miaAuthor',
-			'miaAuthorData',
-			$miaAuthorData
+			'griot',
+			'griotData',
+			$griotData
 		);
 
 	}
@@ -278,7 +278,7 @@ class MIA_Author{
 
 		// Add meta box
 		add_meta_box(
-			'mia_author_connections',
+			'griot-connections',
 			'Related ' . $opposite_records,
 			array( $this, 'connections_metabox_template' ),
 			$screen->id,
