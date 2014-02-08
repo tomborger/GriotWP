@@ -716,6 +716,24 @@ jQuery( document ).ready( function() {
 				// Used by Leaflet to populate zoomer
 				$scope.imageLayers = L.featureGroup();
 
+				// Add saved image layers
+				angular.forEach( annotations, function( annotation ) {
+
+					// Get geoJSON from annotation
+					var geoJSON = annotation.geoJSON;
+
+		    	// Convert geoJSON to layer
+		    	var layer = L.GeoJSON.geometryToLayer( geoJSON.geometry );
+
+		    	// Store reference to annotation in layer
+					layer.annotation = annotation;
+
+					// Add to local image layers collection
+					$scope.imageLayers.addLayer( layer );
+
+				});
+
+
 				/**
 				 * Set up zoomer and link to local image area collection.
 				 */
@@ -767,6 +785,7 @@ jQuery( document ).ready( function() {
 				  });
 
 				 };
+
 
 				/**
 				 * Keep repeater, zoomer, and data object in sync
@@ -863,7 +882,7 @@ jQuery( document ).ready( function() {
 
 
 	/**
-	 * annotative directive
+	 * annotations directive
 	 * 
 	 * Makes a repeater talk to a zoomer
 	 */
