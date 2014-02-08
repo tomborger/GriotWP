@@ -843,6 +843,26 @@ jQuery( document ).ready( function() {
 
 					});
 
+
+					/**
+					 * Sync annotations edited via zoomer
+					 */
+					$scope.zoomer.map.on( 'draw:edited', function( e ) {
+
+						angular.forEach( e.layers._layers, function( layer ) {
+
+							var geoJSON = layer.toGeoJSON();
+
+							$scope.$apply( function() {
+
+								layer.annotation.geoJSON = geoJSON;
+
+							});
+							
+						});
+
+					});
+
 				};
 
 
