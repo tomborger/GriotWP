@@ -61,6 +61,7 @@ jQuery( document ).ready( function() {
 			initialize: function( scope ) {
 
 				scope.modelChain = ['data'];
+				scope.model = scope.data;
 
 			},
 
@@ -197,7 +198,13 @@ jQuery( document ).ready( function() {
 
 					case 'connection':
 						fieldhtml = "<select ng-model='model." + attrs.name + "' ng-options='record.ID as ( record | getTitle ) for record in ui.directory[ ui.oppositeRecordType ]' multiple></select>";
+						break;
 
+					case 'zoomer':
+						// TODO: Set ID based on model chain OR (better yet) update 
+						// flat_image_zoom.js to accept a jQuery object
+						fieldhtml = "<div class='griot-zoomer-container'><div class='griot-zoomer' id='zoomer" + Math.floor( Math.random() * 10000000 ) + "'></div>";
+						break;
 				}
 
 				var templatehtml = "<div class='griot-field-wrap' data='data' ui='ui'>";
@@ -385,8 +392,12 @@ jQuery( document ).ready( function() {
 				 * Reinitialize (and redraw) Swiper instance
 				 */
 				$scope.refresh = function() {
-					$scope.repeater.reInit();
-					$scope.refreshNav();
+
+					$timeout( function() {
+						$scope.repeater.reInit();
+						$scope.refreshNav();
+					});
+
 				}
 
 
@@ -459,6 +470,13 @@ jQuery( document ).ready( function() {
 				};
 
 
+				this.add = function( repeaterModel ) {
+
+					$scope.add( repeaterModel );
+
+				};
+
+
 				/** 
 				 * Advance repeater and set focus on first input element (external)
 				 */
@@ -508,6 +526,20 @@ jQuery( document ).ready( function() {
 				this.prevDisabled = function() {
 
 					return $scope.prevDisabled;
+
+				}
+
+
+				/**
+				 * Slide to active index (external)
+				 */
+				this.swipeToActive = function() {
+
+					$timeout( function() {
+
+						$scope.repeater.swipeTo( $scope.repeater.activeIndex );
+
+					});
 
 				}
 
@@ -643,9 +675,267 @@ jQuery( document ).ready( function() {
 
 
 	/**
+	 * <annotatedimage> directive
+	 *
+	 * Sets up a (non-isolate) scope and controller and prints fields needed for
+	 * zoomable, annotatable images.
+	 */
+	griot.directive( 'annotatedimage', function() {
+
+		return {
+
+			restrict: 'E',
+			template: function ( elem, attrs ) {
+
+				// Recursive directives work; recursive transclusion doesn't.
+				// A workaround ...
+				var transcrude = elem.html();
+
+				return "<div class='griot-annotated-image'>" +
+					"<field label='Image ID' name='" + attrs.name + "' type='text' />" +
+					"<div class='griot-zoomer' id='zoomer" + Math.floor( Math.random() * 100000000 ) + "'></div>" +
+					"<repeater annotations label='Annotations' name='annotations' label-singular='annotation' label-plural='annotations'>" +
+						transcrude +
+					"</repeater>" +
+				"</div>";
+
+			},
+			controller: function( $scope, $element, $attrs, $http ) {
+
+				// Reference to currently selected image ID in data object
+				var imgid = $scope.model[ $attrs.name ];
+
+				// Reference to annotations repeater collection in data object
+				var annotations = $scope.model[ 'annotations' ] ? $scope.model[ 'annotations' ] : [];
+
+				// ID of zoomer container, required by flat_image_zoom
+				// Currently this is randomly generated
+				$scope.container_id = $element.find( '.griot-zoomer' ).first().attr( 'id' );
+
+				// Local repository of image areas (i.e. layers) drawn by user
+				// Used by Leaflet to populate zoomer
+				$scope.imageLayers = L.featureGroup();
+
+				/**
+				 * Set up zoomer and link to local image area collection.
+				 */
+				$scope.build = function() {
+
+					// Get tile JSON
+					// TODO: Make tilesLocation dynamic
+					var tilesLocation = 'http://tilesaw.dx.artsmia.org/' + imgid + '.tif';
+					var http = $http.get( tilesLocation );
+					http.success( function( data ) {
+
+						var tileURL = data.tiles[0].replace('http://0', '//{s}');
+
+						// Build zoomer and store instance in scope
+						$scope.zoomer = Zoomer.zoom_image({
+							container: $scope.container_id,
+							tileURL: tileURL,
+							imageWidth: data.width,
+							imageHeight: data.height
+						});
+
+						// Add feature group to zoomer
+						$scope.zoomer.map.addLayer( $scope.imageLayers );
+
+						// Create drawing controls
+				    var drawControl = new L.Control.Draw({
+
+				      draw: {
+				        circle: false,
+				        polyline: false,
+				        marker: false,
+				        rectangle: {
+				        	shapeOptions: {
+				        		color: '#eee'
+				        	}
+				       	}
+				      },
+				      edit: {
+				      	featureGroup: $scope.imageLayers
+				      }
+
+				    });
+
+				    // Add drawing controls to map
+				    $scope.zoomer.map.addControl( drawControl );
+
+				    $scope.sync();
+
+				  });
+
+				 };
+
+				/**
+				 * Keep repeater, zoomer, and data object in sync
+				 */
+				$scope.sync = function() {
+
+
+					/**
+					 * Sync annotations added via zoomer
+					 */
+					$scope.zoomer.map.on( 'draw:created', function( e ) {
+
+						var geoJSON = e.layer.toGeoJSON();
+
+		    		$scope.$apply( function() {
+
+		    			// Add geoJSON to data object
+			    		var length = annotations.push({
+				    		geoJSON: geoJSON
+				    	});
+
+			    		// Get a reference to the new annotation
+				    	var annotation = annotations[ length - 1 ];
+
+				    	// Convert geoJSON to layer
+				    	var layer = L.GeoJSON.geometryToLayer( geoJSON.geometry );
+
+				    	// Store in layer
+							layer.annotation = annotation;
+
+							// Add to local image layers collection
+							$scope.imageLayers.addLayer( layer );
+
+						});
+
+					});
+
+
+					/**
+					 * Sync annotations deleted via zoomer
+					 */
+					$scope.zoomer.map.on( 'draw:deleted', function( e ) {
+
+						angular.forEach( e.layers._layers, function( layer ) {
+
+							var index = jQuery.inArray( layer, annotations );
+
+							$scope.$apply( function() {
+
+								annotations.splice( index, 1 );
+							
+							});
+
+						});
+
+					});
+
+				};
+
+
+				/**
+				 * Sync annotations deleted via repeater
+				 */
+				$scope.$watchCollection(
+
+					function() {
+						return annotations;
+					},
+					function() {
+
+						angular.forEach( $scope.imageLayers._layers, function( layer ) {
+
+							if( -1 == jQuery.inArray( layer.annotation, annotations ) ) {
+
+								$scope.imageLayers.removeLayer( layer );
+
+							}
+
+						});
+
+					}
+
+				);
+
+				// Initialize zoomer
+				$scope.build();
+
+			}
+
+		}
+
+	});
+
+
+
+	/**
+	 * annotative directive
+	 * 
+	 * Makes a repeater talk to a zoomer
+	 */
+	griot.directive( 'annotations', function() {
+
+		return {
+
+			restrict: 'A',
+			require: ['repeater', '^annotatedimage'],
+			link: function( scope, elem, attrs, ctrls ) {
+
+				var repeaterCtrl = ctrls[0];
+				var imageCtrl = ctrls[1];
+
+
+				/**
+				 * Remove 'Add Annotation' button
+				 */
+				elem.find( 'a.griot-button' ).first().remove();
+
+
+				/**
+				 * Update repeater when data object changes
+				 * TODO: This should be core functionality for repeater
+				 */
+				scope.$watchCollection( 
+
+					function(){ 
+						return scope.model[ 'annotations' ];
+					}, 
+					function() {
+						repeaterCtrl.refresh();
+						repeaterCtrl.swipeToActive();
+					}
+
+				);
+
+			}
+		}
+	})
+
+	
+	/**
+	 * Extend Leaflet
+	 */
+	L.extend( L.LatLngBounds.prototype, {
+
+	  toGeoJSON: function() {
+
+	    L.Polygon.prototype.toGeoJSON.call( this );
+
+	  },
+
+	  getLatLngs: function() {
+
+	    L.Polygon.prototype._convertLatLngs([
+	      [this.getSouthWest().lat, this.getSouthWest().lng],
+	      [this.getNorthWest().lat, this.getNorthWest().lng],
+	      [this.getNorthEast().lat, this.getNorthEast().lng],
+	      [this.getSouthEast().lat, this.getSouthEast().lng]
+	    ]);
+
+	  }
+
+	});
+
+
+	/**
 	 * Manually initialize Angular after environment is set up
 	 */
 	angular.bootstrap( document, ['griot'] );
 
 
 });
+

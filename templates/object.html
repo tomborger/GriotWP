@@ -2,19 +2,23 @@
 
 	<field label='TMS ID' name='tmsid' type='text' />
 
-	<field label='Description' name='description' type='wysiwyg' />
+	<annotatedimage label='Image' name='image'>
 
-	<repeater label='Views' label=plural='views' label-singular='view' name='views'>
+		<field label='Text' name='text' type='text' />
 
-		<field label='Title' name='repeatertitle' type='text' />
+		<field label='Text Area' name='textarea' type='textarea' />
 
-		<repeater label='Annotations' label-plural='annotations' label-singular='annotation' name='annotations'>
+		<field label='WYSIWYG' name='wysiwyg' type='wysiwyg' />
 
-			<field label='Something' name='something' type='wysiwyg' />
+	</annotatedimage>
 
-		</repeater>
+	<repeater label='Repeater' name='repeater' label-singular='repeater item' label-plural='repeater items'>
 
-		<field label='Image' name='image' type='text' />
+		<field label='Text' name='text' type='text' />
+
+		<field label='Text Area' name='textarea' type='textarea' />
+
+		<field label='WYSIWYG' name='wysiwyg' type='wysiwyg' />
 
 	</repeater>
 

@@ -165,53 +165,107 @@ class Griot{
 
 		}
 
-		// Swiper styles
-		wp_enqueue_style(
-			'swiper',
-			plugins_url( 'css/vendor/idangerous.swiper.css', __FILE__ ),
-			false
-		);
-
-		// Our styles
-		wp_enqueue_style(
-			'griot',
-			plugins_url( 'css/griot.css', __FILE__ ),
-			false
-		);
-
-		// CKEditor
-		wp_enqueue_script(
-			'ckeditor',
-			plugins_url( 'js/vendor/ckeditor/ckeditor.js', __FILE__ ),
-			false
-		);
-		wp_enqueue_script(
-			'ckeditor_adapter',
-			plugins_url( 'js/vendor/ckeditor/adapters/jquery.js', __FILE__ ),
-			array( 'ckeditor' ),
-			null,
-			true
-		);
-
-		// Swiper core
-		wp_enqueue_script(
-			'swiper',
-			plugins_url( 'js/vendor/idangerous.swiper.min.js', __FILE__ ),
-			false,
-			null,
-			true
-		);
-
-		// Angular core
+		// Angular
 		wp_enqueue_script( 
 			'angular', 
-			plugins_url( 'js/vendor/angular.min.js', __FILE__ ), 
+			plugins_url( 'components/angular/angular.min.js', __FILE__ ), 
 			false, 
 			null,
 			false
 		);
 
-		// Our controller
+		// CKEditor
+		// Required by WYSIWYG fields
+		wp_enqueue_script(
+			'ckeditor',
+			plugins_url( 'components/ckeditor/ckeditor.js', __FILE__ ),
+			false
+		);
+		wp_enqueue_script(
+			'ckeditor_adapter',
+			plugins_url( 'components/ckeditor/adapters/jquery.js', __FILE__ ),
+			array( 'ckeditor' ),
+			null,
+			true
+		);
+
+		// Swiper
+		// Required by repeater fields
+		wp_enqueue_style(
+			'swiper',
+			plugins_url( 'components/swiper/idangerous.swiper.css', __FILE__ ),
+			false
+		);
+		wp_enqueue_script(
+			'swiper',
+			plugins_url( 'components/swiper/idangerous.swiper.min.js', __FILE__ ),
+			false,
+			null,
+			true
+		);
+
+		// Leaflet
+		// Required by zoomer fields
+		wp_enqueue_style(
+			'leaflet',
+			plugins_url( 'components/leafletnew/leaflet.css', __FILE__  ),
+			false
+		);
+		wp_enqueue_script(
+			'leaflet',
+			plugins_url( 'components/leafletnew/leaflet.js', __FILE__  ),
+			false,
+			null,
+			true
+		);
+
+		// Leaflet Draw
+		// Required by zoomer fields
+		wp_enqueue_style(
+			'leaflet_draw',
+			plugins_url( 'components/leaflet.draw/leaflet.draw.css', __FILE__  ),
+			false
+		);
+		wp_enqueue_script(
+			'leaflet_draw',
+			plugins_url( 'components/leaflet.draw/leaflet.draw.js', __FILE__  ),
+			array( 'leaflet' ),
+			null,
+			true
+		);
+
+		// jQuery Actual
+		// Required by zoomer fields
+		wp_enqueue_script( 
+			'jquery_actual',
+			plugins_url( 'components/jquery.actual/jquery.actual.min.js', __FILE__ ),
+			array( 'jquery' ),
+			null,
+			true
+		);
+
+		// Flat Image Zoom
+		// Required by zoomer fields
+		wp_enqueue_script(
+			'flat_image_zoom',
+			plugins_url( 'components/flat_image_zoom/flat_image_zoom.js', __FILE__ ),
+			array( 
+				'jquery', 
+				'leaflet', 
+				'leaflet_draw', 
+				'jquery_actual', 
+				'underscore',
+			),
+			null,
+			true
+		);
+
+		// Griot
+		wp_enqueue_style(
+			'griot',
+			plugins_url( 'css/griot.css', __FILE__ ),
+			false
+		);
 		wp_enqueue_script(
 			'griot',
 			plugins_url( 'js/griot.js', __FILE__ ),
