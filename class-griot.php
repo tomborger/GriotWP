@@ -50,6 +50,7 @@ class Griot{
 			'exclude_from_search' => true,
 			'publicly_queryable'  => true,
 			'capability_type'     => 'post',
+			'menu_icon'						=> 'dashicons-format-image',
 		);
 
 		register_post_type( 'object', $args );
@@ -96,6 +97,7 @@ class Griot{
 			'exclude_from_search' => true,
 			'publicly_queryable'  => true,
 			'capability_type'     => 'post',
+			'menu_icon'						=> 'dashicons-book',
 		);
 
 		register_post_type( 'story', $args );

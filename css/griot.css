@@ -60,6 +60,30 @@
 	border-color:#999;
 	color:#222;
 }
+.griot-icon{
+	font-family:dashicons;
+	font-size:20px;
+}
+.griot-icon-menu:before{
+	content:'\f333';
+}
+.griot-icon-delete:before{
+	content:'\f335';
+}
+.griot-icon-shiftleft:before{
+	content:'\f341';
+}
+.griot-icon-shiftright:before{
+	content:'\f345';
+}
+.griot-icon-prev:before{
+	content:'\f141';
+	font-size:26px;
+}
+.griot-icon-next:before{
+	content:'\f139';
+	font-size:26px;
+}
 
 
 /*
@@ -236,7 +260,6 @@
 	line-height:30px;
 	text-align:center;
 	vertical-align:middle;
-	font-size:14px;
 	color:#f7f7f7;
 }
 .griot-repeater-menu-option-label{

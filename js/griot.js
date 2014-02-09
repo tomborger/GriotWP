@@ -551,26 +551,26 @@ jQuery( document ).ready( function() {
 					"<div class='griot-repeater'>" +
 						"<div class='griot-repeater-header' ng-show='repeater.slides.length !== 0'>" +
 							"<div class='griot-repeater-pagination'></div>" +
-							"<span class='griot-repeater-nav prev' ng-click='repeater.swipePrev()' ng-class=\"{'disabled':prevDisabled}\">◀</span>" +
-							"<span class='griot-repeater-nav next' ng-click='repeater.swipeNext()' ng-class=\"{'disabled':nextDisabled}\">▶</span>" +
+							"<span class='griot-repeater-nav griot-icon griot-icon-prev prev' ng-click='repeater.swipePrev()' ng-class=\"{'disabled':prevDisabled}\"></span>" +
+							"<span class='griot-repeater-nav griot-icon griot-icon-next next' ng-click='repeater.swipeNext()' ng-class=\"{'disabled':nextDisabled}\"></span>" +
 						"</div>" +
 						"<div class='griot-repeater-container swiper-container'>" +
 							"<div class='griot-repeater-wrapper swiper-wrapper'>" +
 								"<div class='griot-repeater-item swiper-slide' ng-repeat='elem in model." + attrs.name + "'>" +
 									"<div class='griot-repeater-meta-wrap'>"+
 										"<span class='griot-repeater-meta'>" + attrs.labelSingular + "&nbsp;&nbsp;{{$index + 1}}&nbsp;&nbsp;of&nbsp;&nbsp;{{repeater.slides.length}}</span>" +
-										"<a class='griot-repeater-menu-toggle' ng-click='toggleMenu()' ng-class='{active:showMenu}'>☰</a>" +
+										"<a class='griot-repeater-menu-toggle griot-icon griot-icon-menu' ng-click='toggleMenu()' ng-class='{active:showMenu}'></a>" +
 										"<div class='griot-repeater-menu' ng-show='showMenu'>" +
 											"<div class='griot-repeater-menu-option'>" +
-												"<a class='griot-repeater-menu-option-icon' ng-click='remove(model." + attrs.name + ", $index)'>✕</a>" +
+												"<a class='griot-repeater-menu-option-icon griot-icon griot-icon-delete' ng-click='remove(model." + attrs.name + ", $index)'></a>" +
 												"<a class='griot-repeater-menu-option-label' ng-click='remove(model." + attrs.name + ", $index)'>Delete " + attrs.labelSingular + "</a>" +
 											"</div>" +											
 											"<div class='griot-repeater-menu-option' ng-class='{disabled:$index === 0}'>" +
-												"<a class='griot-repeater-menu-option-icon' ng-click='rearrange(model." + attrs.name + ", $index, $index - 1)'>⤺</a>" +
+												"<a class='griot-repeater-menu-option-icon griot-icon griot-icon-shiftleft' ng-click='rearrange(model." + attrs.name + ", $index, $index - 1)'></a>" +
 												"<a class='griot-repeater-menu-option-label' ng-click='rearrange(model." + attrs.name + ", $index, $index - 1)'>Shift left</a>" +
 											"</div>" +
 											"<div class='griot-repeater-menu-option' ng-class='{disabled:$index === repeater.slides.length - 1}'>" +
-												"<a class='griot-repeater-menu-option-icon' ng-click='rearrange(model." + attrs.name + ", $index, $index + 1)'>⤻</a>" +
+												"<a class='griot-repeater-menu-option-icon griot-icon griot-icon-shiftright' ng-click='rearrange(model." + attrs.name + ", $index, $index + 1)'></a>" +
 												"<a class='griot-repeater-menu-option-label' ng-click='rearrange(model." + attrs.name + ", $index, $index + 1)'>Shift right</a>" +
 											"</div>" +
 										"</div>" +
