@@ -2,15 +2,21 @@
 
 	<field label='TMS ID' name='tmsid' type='text' />
 
-	<annotatedimage label='Image' name='image'>
 
-		<field label='Text' name='text' type='text' />
+	<repeater label='Views' name='views' label-singular='view' label-plural='views'>
 
-		<field label='Text Area' name='textarea' type='textarea' />
+		<annotatedimage label='Image' name='image'>
 
-		<field label='WYSIWYG' name='wysiwyg' type='wysiwyg' />
+			<field label='Text' name='text' type='text' />
 
-	</annotatedimage>
+			<field label='Text Area' name='textarea' type='textarea' />
+
+			<field label='WYSIWYG' name='wysiwyg' type='wysiwyg' />
+
+		</annotatedimage>
+
+	</repeater>
+
 
 
 	<repeater label='Repeater' name='repeater' label-singular='repeater item' label-plural='repeater items'>
@@ -20,6 +26,30 @@
 		<field label='Text Area' name='textarea' type='textarea' />
 
 		<field label='WYSIWYG' name='wysiwyg' type='wysiwyg' />
+
+			<repeater label='Repeater' name='repeater' label-singular='repeater item' label-plural='repeater items'>
+
+				<field label='Text' name='text' type='text' />
+
+				<field label='Text Area' name='textarea' type='textarea' />
+
+				<field label='WYSIWYG' name='wysiwyg' type='wysiwyg' />
+
+					<repeater label='Repeater' name='repeater' label-singular='repeater item' label-plural='repeater items'>
+
+						<field label='Text' name='text' type='text' />
+
+						<field label='Text Area' name='textarea' type='textarea' />
+
+						<field label='WYSIWYG' name='wysiwyg' type='wysiwyg' />
+
+					</repeater>
+
+					<field label='Text' name='tester' type='text' />
+
+			</repeater>
+
+			<field label='Text' name='tester' type='text' />
 
 	</repeater>
 
