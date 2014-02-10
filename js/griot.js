@@ -177,6 +177,14 @@ jQuery( document ).ready( function() {
 
 				ModelChain.update( $scope, $attrs.name );
 
+				$scope.protected = $attrs.hasOwnProperty( 'protected' ) ? true : false;
+
+				$scope.toggleProtection = function() {
+
+					$scope.protected = ! $scope.protected;
+
+				}
+
 			},
 			template: function( elem, attrs ) {
 
@@ -185,37 +193,41 @@ jQuery( document ).ready( function() {
 				switch( attrs.type ){
 
 					case 'text':
-						fieldhtml = "<input type='text' ng-model='model." + attrs.name + "' />";
+						fieldhtml = "<input type='text' ng-model='model." + attrs.name + "' ng-disabled='protected' />";
 						break;
 
 					case 'textarea':
-						fieldhtml = "<textarea ng-model='model." + attrs.name + "'></textarea>";
+						fieldhtml = "<textarea ng-model='model." + attrs.name + "' ng-disabled='protected' ></textarea>";
 						break;
 
 					case 'wysiwyg':
-						fieldhtml = "<textarea ng-model='model." + attrs.name + "' ck-editor></textarea>";
+						fieldhtml = "<textarea ng-model='model." + attrs.name + "' ck-editor ng-disabled='protected' ></textarea>";
 						break;
 
 					case 'connection':
-						fieldhtml = "<select ng-model='model." + attrs.name + "' ng-options='record.ID as ( record | getTitle ) for record in ui.directory[ ui.oppositeRecordType ]' multiple></select>";
+						fieldhtml = "<select ng-model='model." + attrs.name + "' ng-options='record.ID as ( record | getTitle ) for record in ui.directory[ ui.oppositeRecordType ]' multiple ng-disabled='protected' ></select>";
 						break;
-
-					case 'zoomer':
-						// TODO: Set ID based on model chain OR (better yet) update 
-						// flat_image_zoom.js to accept a jQuery object
-						fieldhtml = "<div class='griot-zoomer-container'><div class='griot-zoomer' id='zoomer" + Math.floor( Math.random() * 10000000 ) + "'></div>";
-						break;
-				}
-
-				var templatehtml = "<div class='griot-field-wrap' data='data' ui='ui'>";
-
-				if( attrs.label ) {
-
-					templatehtml += "<div class='griot-field-meta' ><span class='griot-label'>" + attrs.label + "</span></div>";
 
 				}
 
-				templatehtml += "<div class='griot-field'>" +
+				var templatehtml = "<div class='griot-field-wrap' data='data' ui='ui'>" +
+					"<div class='griot-field-meta'>";
+
+				if( attrs.hasOwnProperty( 'label' ) ) {
+
+					templatehtml += "<span class='griot-label'>" + attrs.label + "</span>";
+
+				}
+
+				if( attrs.hasOwnProperty( 'protected' ) ) {
+
+					templatehtml += "<a class='griot-button' ng-if='protected' ng-click='toggleProtection()'>Unlock</a>" +
+						"<a class='griot-button' ng-if='!protected' ng-click='toggleProtection()'>Lock</a>";
+
+				}
+
+				templatehtml += "</div>" +
+					"<div class='griot-field'>" +
 						fieldhtml +
 					"</div>" +
 				"</div>";
@@ -251,9 +263,13 @@ jQuery( document ).ready( function() {
 	      var ck = CKEDITOR.replace( elem[0] );
 
 	      if( repeater ) {
+
 	      	ck.on( 'instanceReady', function() {
+
 	      		repeater.refresh();
+
 	      	});
+
 	      }
 
 	      if( !ngModel ) {
@@ -275,6 +291,18 @@ jQuery( document ).ready( function() {
 	        ck.setData( ngModel.$viewValue );
 
 	      };
+
+	      // Listen for changes to protected status
+	      ck.on( 'instanceReady', function() {
+
+		      scope.$watch( 'protected', function( value ) {
+
+		      	ck.setReadOnly( value );
+		      	
+		      });
+
+	      });
+
 
     	}
   	
@@ -410,8 +438,9 @@ jQuery( document ).ready( function() {
 
 					repeaterModel.push( {} );
 
+					$scope.refresh();
+
 					$timeout( function() {
-						$scope.refresh();
 						$scope.repeater.swipeTo( $scope.repeater.slides.length - 1 );
 					});
 
@@ -427,8 +456,9 @@ jQuery( document ).ready( function() {
 
 					repeaterModel.splice( itemIndex, 1 );
 
+					$scope.refresh();
+
 					$timeout( function() { 
-						$scope.refresh();
 						$scope.repeater.swipeTo( $scope.repeater.activeIndex );
 					});
 
@@ -456,6 +486,20 @@ jQuery( document ).ready( function() {
 				$scope.toggleMenu = function() {
 
 					$scope.showMenu = !$scope.showMenu;
+
+				};
+
+
+				/**
+				 * Slide to active index
+				 */
+				$scope.swipeToActive = function() {
+
+					$timeout( function() {
+
+						$scope.repeater.swipeTo( $scope.repeater.activeIndex );
+
+					});
 
 				};
 
@@ -529,20 +573,6 @@ jQuery( document ).ready( function() {
 
 				}
 
-
-				/**
-				 * Slide to active index (external)
-				 */
-				this.swipeToActive = function() {
-
-					$timeout( function() {
-
-						$scope.repeater.swipeTo( $scope.repeater.activeIndex );
-
-					});
-
-				}
-
 			},
 			template: function( elem, attrs ) {
 
@@ -608,6 +638,19 @@ jQuery( document ).ready( function() {
 					}
 
 				});
+
+				// Watch for external changes to data object and apply
+				scope.$watchCollection( 
+
+					function() {
+						return scope.model[ attrs.name ];
+					},
+					function() {
+						scope.refresh();
+						scope.swipeToActive();
+					}
+
+				);
 
 			}
 
@@ -692,9 +735,11 @@ jQuery( document ).ready( function() {
 				var transcrude = elem.html();
 
 				return "<div class='griot-annotated-image'>" +
-					"<field label='Image ID' name='" + attrs.name + "' type='text' />" +
-					"<div class='griot-zoomer' id='zoomer" + Math.floor( Math.random() * 100000000 ) + "'></div>" +
+					"<field protected label='Image ID' name='" + attrs.name + "' type='text' />" +
+					"<zoomer primary />" + 
+					//"<div class='griot-zoomer' id='zoomer" + Math.floor( Math.random() * 100000000 ) + "'></div>" +
 					"<repeater annotations label='Annotations' name='annotations' label-singular='annotation' label-plural='annotations'>" +
+						"<zoomer secondary />" +
 						transcrude +
 					"</repeater>" +
 				"</div>";
@@ -702,105 +747,209 @@ jQuery( document ).ready( function() {
 			},
 			controller: function( $scope, $element, $attrs, $http ) {
 
-				// Reference to currently selected image ID in data object
-				var imgid = $scope.model[ $attrs.name ];
+				this.imageID = $scope.model[ $attrs.name ];
 
-				// Reference to annotations repeater collection in data object
-				var annotations = $scope.model[ 'annotations' ] ? $scope.model[ 'annotations' ] : [];
+				var _this = this;
 
-				// ID of zoomer container, required by flat_image_zoom
-				// Currently this is randomly generated
-				$scope.container_id = $element.find( '.griot-zoomer' ).first().attr( 'id' );
+				var tilesLocation = 'http://tilesaw.dx.artsmia.org/' + this.imageID + '.tif';
+				var http = $http.get( tilesLocation );
+				http.success( function( data ) { 
 
-				// Local repository of image areas (i.e. layers) drawn by user
-				// Used by Leaflet to populate zoomer
-				$scope.imageLayers = L.featureGroup();
-
-				// Add saved image layers
-				angular.forEach( annotations, function( annotation ) {
-
-					// Get geoJSON from annotation
-					var geoJSON = annotation.geoJSON;
-
-		    	// Convert geoJSON to layer
-		    	var layer = L.GeoJSON.geometryToLayer( geoJSON.geometry );
-
-		    	// Store reference to annotation in layer
-					layer.annotation = annotation;
-
-					// Add to local image layers collection
-					$scope.imageLayers.addLayer( layer );
+					_this.tileData = data;
 
 				});
 
+				this.getTileData = function() {
+					return _this.tileData;
+				};
+
+				// Reference to annotations repeater collection in data object
+				this.annotations = $scope.model[ 'annotations' ];
+
+			}
+
+		}
+
+	});
+
+
+	/**
+	 * <zoomer> directive
+	 * 
+	 * Renders a zoomer
+	 */
+	griot.directive( 'zoomer', function( $timeout ) {
+
+		return {
+
+			restrict: 'E',
+			require: '^annotatedimage',
+			replace: true,
+			template: function( elem, attrs ) {
+				return "<div class='griot-zoomer'></div>";
+			},
+			link: function( scope, elem, attrs, imageCtrl ) {
 
 				/**
-				 * Set up zoomer and link to local image area collection.
+				 * Key properties
 				 */
-				$scope.build = function() {
+				var container_id = 'zoomer' + Math.floor( Math.random() * 1000000 ) + scope.$index;
+				elem.attr( 'id', container_id );
+				var imageLayers = L.featureGroup();
+				var annotations = imageCtrl.annotations;
 
-					// Get tile JSON
-					// TODO: Make tilesLocation dynamic
-					var tilesLocation = 'http://tilesaw.dx.artsmia.org/' + imgid + '.tif';
-					var http = $http.get( tilesLocation );
-					http.success( function( data ) {
+				/**
+				 * Watch parent controller tileData property
+				 * Create zoomer when tileData is received from server
+				 */
 
-						var tileURL = data.tiles[0].replace('http://0', '//{s}');
+				scope.$watch(
 
-						// Build zoomer and store instance in scope
-						$scope.zoomer = Zoomer.zoom_image({
-							container: $scope.container_id,
-							tileURL: tileURL,
-							imageWidth: data.width,
-							imageHeight: data.height
+					function() {
+
+						return imageCtrl.getTileData();
+
+					},
+					function( tileData ) {
+
+						if( tileData ) {
+
+							buildZoomer( tileData );
+
+						} else {
+
+							destroyZoomer();
+
+						}
+
+					}
+
+				);
+
+				/**
+				 * Destroy zoomer
+				 */
+				var destroyZoomer = function() {
+
+
+				};
+
+				/**
+				 * Build zoomer
+				 */
+				var buildZoomer = function( tileData ) {
+
+					var tilesURL = tileData.tiles[0].replace( 'http://0', '//{s}' );
+
+					// Build zoomer and store instance in scope
+					var zoomer = Zoomer.zoom_image({
+						container: container_id,
+						tileURL: tilesURL,
+						imageWidth: tileData.width,
+						imageHeight: tileData.height
+					});
+
+					// Add feature group to zoomer
+					zoomer.map.addLayer( imageLayers );
+
+					// Add previously saved image areas
+					loadImageAreas( zoomer );
+
+					if( attrs.hasOwnProperty( 'primary' ) ) {
+
+						addDrawingControls( zoomer );
+
+						addDrawingCallbacks( zoomer );
+
+						watchForExternalDeletion( zoomer );
+
+					}
+
+				};
+
+				/**
+				 * Load previously saved image areas
+				 */
+				var loadImageAreas = function( zoomer ) {
+
+					if( attrs.hasOwnProperty( 'primary' ) ) {
+
+						angular.forEach( annotations, function( annotation ) {
+
+							var geoJSON = annotation.geoJSON;
+
+				    	// Convert geoJSON to layer
+				    	var layer = L.GeoJSON.geometryToLayer( geoJSON.geometry );
+
+				    	// Store annotation in layer
+							layer.annotation = annotation;
+
+							// Add to local image layers collection
+							imageLayers.addLayer( layer );
+
 						});
 
-						// Add feature group to zoomer
-						$scope.zoomer.map.addLayer( $scope.imageLayers );
+					}
 
-						// Create drawing controls
-				    var drawControl = new L.Control.Draw({
+					if( attrs.hasOwnProperty( 'secondary' ) ) {
 
-				      draw: {
-				        circle: false,
-				        polyline: false,
-				        marker: false,
-				        rectangle: {
-				        	shapeOptions: {
-				        		color: '#eee'
-				        	}
-				       	}
-				      },
-				      edit: {
-				      	featureGroup: $scope.imageLayers
-				      }
+						var annotation = annotations[ scope.$index ];
 
-				    });
+						var geoJSON = annotation.geoJSON;
 
-				    // Add drawing controls to map
-				    $scope.zoomer.map.addControl( drawControl );
+						var layer = L.GeoJSON.geometryToLayer( geoJSON.geometry );
 
-				    $scope.sync();
+						imageLayers.addLayer( layer );
 
-				  });
+						var bounds = L.latLngBounds( layer._latlngs );
 
-				 };
+						setTimeout( function() {
 
+							console.log( geoJSON.geometry );
 
-				/**
-				 * Keep repeater, zoomer, and data object in sync
-				 */
-				$scope.sync = function() {
+							zoomer.map.fitBounds( bounds );
 
+						}, 1000);
+
+					}
+
+				};
+
+				var addDrawingControls = function( zoomer ) {
+
+					var drawControl = new L.Control.Draw({
+
+			      draw: {
+			        circle: false,
+			        polyline: false,
+			        marker: false,
+			        rectangle: {
+			        	shapeOptions: {
+			        		color: '#eee'
+			        	}
+			       	}
+			      },
+			      edit: {
+			      	featureGroup: imageLayers
+			      }
+
+			    });
+
+			    // Add drawing controls to map
+			    zoomer.map.addControl( drawControl );
+
+				};
+
+				var addDrawingCallbacks = function( zoomer ) {
 
 					/**
 					 * Sync annotations added via zoomer
 					 */
-					$scope.zoomer.map.on( 'draw:created', function( e ) {
+					zoomer.map.on( 'draw:created', function( e ) {
 
 						var geoJSON = e.layer.toGeoJSON();
 
-		    		$scope.$apply( function() {
+						scope.$apply( function() {
 
 		    			// Add geoJSON to data object
 			    		var length = annotations.push({
@@ -817,23 +966,22 @@ jQuery( document ).ready( function() {
 							layer.annotation = annotation;
 
 							// Add to local image layers collection
-							$scope.imageLayers.addLayer( layer );
+							imageLayers.addLayer( layer );
 
 						});
 
 					});
 
-
 					/**
 					 * Sync annotations deleted via zoomer
 					 */
-					$scope.zoomer.map.on( 'draw:deleted', function( e ) {
+					zoomer.map.on( 'draw:deleted', function( e ) {
 
 						angular.forEach( e.layers._layers, function( layer ) {
 
 							var index = jQuery.inArray( layer, annotations );
 
-							$scope.$apply( function() {
+							scope.$apply( function() {
 
 								annotations.splice( index, 1 );
 							
@@ -843,17 +991,16 @@ jQuery( document ).ready( function() {
 
 					});
 
-
 					/**
 					 * Sync annotations edited via zoomer
 					 */
-					$scope.zoomer.map.on( 'draw:edited', function( e ) {
+					zoomer.map.on( 'draw:edited', function( e ) {
 
 						angular.forEach( e.layers._layers, function( layer ) {
 
 							var geoJSON = layer.toGeoJSON();
 
-							$scope.$apply( function() {
+							scope.$apply( function() {
 
 								layer.annotation.geoJSON = geoJSON;
 
@@ -865,84 +1012,38 @@ jQuery( document ).ready( function() {
 
 				};
 
+				var watchForExternalDeletion = function( zoomer ) {
 
-				/**
-				 * Sync annotations deleted via repeater
-				 */
-				$scope.$watchCollection(
+					scope.$watchCollection(
 
-					function() {
-						return annotations;
-					},
-					function() {
+						function() {
 
-						angular.forEach( $scope.imageLayers._layers, function( layer ) {
+							return annotations;
 
-							if( -1 == jQuery.inArray( layer.annotation, annotations ) ) {
+						},
+						function() {
 
-								$scope.imageLayers.removeLayer( layer );
+							angular.forEach( imageLayers._layers, function( layer ) {
 
-							}
+								if( -1 == jQuery.inArray( layer.annotation, annotations ) ) {
 
-						});
+									imageLayers.removeLayer( layer );
 
-					}
+								}
 
-				);
+							});
 
-				// Initialize zoomer
-				$scope.build();
+						}
+
+					);
+
+				};
 
 			}
 
 		}
 
 	});
-
-
-
-	/**
-	 * annotations directive
-	 * 
-	 * Makes a repeater talk to a zoomer
-	 */
-	griot.directive( 'annotations', function() {
-
-		return {
-
-			restrict: 'A',
-			require: ['repeater', '^annotatedimage'],
-			link: function( scope, elem, attrs, ctrls ) {
-
-				var repeaterCtrl = ctrls[0];
-				var imageCtrl = ctrls[1];
-
-
-				/**
-				 * Remove 'Add Annotation' button
-				 */
-				elem.find( 'a.griot-button' ).first().remove();
-
-
-				/**
-				 * Update repeater when data object changes
-				 * TODO: This should be core functionality for repeater
-				 */
-				scope.$watchCollection( 
-
-					function(){ 
-						return scope.model[ 'annotations' ];
-					}, 
-					function() {
-						repeaterCtrl.refresh();
-						repeaterCtrl.swipeToActive();
-					}
-
-				);
-
-			}
-		}
-	})
 
 	
 	/**
