@@ -5,6 +5,7 @@
 #griot-data{
 	width:100%;
 	height:500px;
+	display:none;
 }
 #griot{
 	margin-bottom:25px;
@@ -294,10 +295,6 @@
 /*
  * ZOOMERS
  ******************************************************************************/
-.griot-zoomer-container{
-	width:100%;
-	height:500px;
-}
 .griot-zoomer{
 	width:100%;
 	height:500px;

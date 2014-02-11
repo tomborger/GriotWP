@@ -631,6 +631,21 @@ jQuery( document ).ready( function() {
 
 					return $scope.repeater.activeIndex;
 
+				};
+
+
+				/**
+				 * Expose repeater object
+				 */
+				this.swipeTo = function( index ) {
+
+					$timeout( function() {
+
+						console.log( index );
+						$scope.repeater.swipeTo( index );
+
+					});
+
 				}
 
 			},
@@ -888,14 +903,14 @@ jQuery( document ).ready( function() {
 						imageHeight: tileData.height
 					});
 
+					_this.zoomer.map._zoomAnimated = false;
+
 					// Add feature group to zoomer
 					_this.zoomer.map.addLayer( _this.imageLayers );
 
 					_this.loadImageAreas();
 
 					_this.addDrawingControls();
-
-					_this.addDrawingCallbacks();
 
 					_this.watchForExternalDeletion();
 
@@ -949,82 +964,6 @@ jQuery( document ).ready( function() {
 			    });
 
 			    _this.zoomer.map.addControl( drawControl );
-
-				};
-
-				/**
-				 * Define callbacks for drawing events
-				 */
-				this.addDrawingCallbacks = function() {
-
-					/**
-					 * Sync annotations added via zoomer
-					 */
-					_this.zoomer.map.on( 'draw:created', function( e ) {
-
-						// Create geoJSON from draw event
-						var geoJSON = e.layer.toGeoJSON();
-
-						$scope.$apply( function() {
-
-		    			// Add geoJSON to annotation record in data object
-			    		var length = _this.annotations.push({
-				    		geoJSON: geoJSON
-				    	});
-
-			    		// Get a reference to the new annotation
-				    	var annotation = _this.annotations[ length - 1 ];
-
-				    	// Convert geoJSON to layer
-				    	var layer = L.GeoJSON.geometryToLayer( geoJSON.geometry );
-
-				    	// Store reference in layer
-							layer.annotation = annotation;
-
-							// Add to local image layers collection
-							_this.imageLayers.addLayer( layer );
-
-						});
-
-					});
-
-					/**
-					 * Sync annotations deleted via zoomer
-					 */
-					_this.zoomer.map.on( 'draw:deleted', function( e ) {
-
-						angular.forEach( e.layers._layers, function( layer ) {
-
-							var index = jQuery.inArray( layer.annotation, _this.annotations );
-
-							$scope.$apply( function() {
-
-								_this.annotations.splice( index, 1 );
-							
-							});
-
-						});
-
-					});
-
-					/**
-					 * Sync annotations edited via zoomer
-					 */
-					_this.zoomer.map.on( 'draw:edited', function( e ) {
-
-						angular.forEach( e.layers._layers, function( layer ) {
-
-							var geoJSON = layer.toGeoJSON();
-
-							$scope.$apply( function() {
-
-								layer.annotation.geoJSON = geoJSON;
-
-							});
-							
-						});
-
-					});
 
 				};
 
@@ -1092,8 +1031,8 @@ jQuery( document ).ready( function() {
 				 * Retrieve the zoomer instance
 				 */
 				this.getZoomer = function() {
-					return _this.zoomer;
-				};
+					return _this.zoomer ? _this.zoomer : null; 
+				}
 
 
 				/**
@@ -1128,9 +1067,16 @@ jQuery( document ).ready( function() {
 			require: ['repeater','^annotatedimage'],
 			link: function( scope, elem, attrs, ctrls ) {
 
+				// Define controllers
 				var repeaterCtrl = ctrls[0];
 				var imageCtrl = ctrls[1];
 
+				// Do not allow users to add annotations from the repeater
+				elem.find( '.griot-button' ).first().remove();
+
+				/**
+				 * Change focused image area when user advances repeater slider
+				 */
 				scope.$watch( 
 					function() {
 						return repeaterCtrl.getActiveIndex();
@@ -1147,8 +1093,97 @@ jQuery( document ).ready( function() {
 					}
 				);
 
-				elem.find( '.griot-button' ).first().remove();
+				/**
+				 * Attach listeners to zoomer on creation
+				 */
+				scope.$watch(
+					function() {
+						return imageCtrl.getZoomer();
+					},
+					function( zoomer ) {
+						if( zoomer ) {
 
+
+							/**
+							 * Sync annotations created via zoomer
+							 */
+							zoomer.map.on( 'draw:created', function( e ) {
+
+								// Create geoJSON from draw event
+								var geoJSON = e.layer.toGeoJSON();
+
+								scope.$apply( function() {
+
+				    			// Add geoJSON to annotation record in data object
+					    		var length = imageCtrl.annotations.push({
+						    		geoJSON: geoJSON
+						    	});
+
+					    		// Get a reference to the new annotation
+						    	var annotation = imageCtrl.annotations[ length - 1 ];
+
+						    	// Convert geoJSON to layer
+						    	var layer = L.GeoJSON.geometryToLayer( geoJSON.geometry );
+
+						    	// Store reference in layer
+									layer.annotation = annotation;
+
+									// Add to local image layers collection
+									imageCtrl.imageLayers.addLayer( layer );
+
+									// Zoom in on image
+									zoomer.map.fitBounds( layer );
+
+								});
+
+								// Swipe to annotation
+								repeaterCtrl.swipeTo( imageCtrl.annotations.length - 1 );
+
+							});
+
+
+							/**
+							 * Sync annotations deleted via zoomer
+							 */
+							zoomer.map.on( 'draw:deleted', function( e ) {
+
+								angular.forEach( e.layers._layers, function( layer ) {
+
+									var index = jQuery.inArray( layer.annotation, imageCtrl.annotations );
+
+									scope.$apply( function() {
+
+										imageCtrl.annotations.splice( index, 1 );
+									
+									});
+
+								});
+
+							});
+
+
+							/**
+							 * Sync annotations edited via zoomer
+							 */
+							zoomer.map.on( 'draw:edited', function( e ) {
+
+								angular.forEach( e.layers._layers, function( layer ) {
+
+									var geoJSON = layer.toGeoJSON();
+
+									scope.$apply( function() {
+
+										layer.annotation.geoJSON = geoJSON;
+
+									});
+									
+								});
+
+							});
+
+						}
+					}
+				);
 			}
 		}
 	})
