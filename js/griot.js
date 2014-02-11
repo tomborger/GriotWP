@@ -390,6 +390,8 @@ jQuery( document ).ready( function() {
 				$scope.prevDisabled = true;
 				$scope.nextDisabled = true;
 
+				$scope.initializing = true;
+
 
 				/**
 				 * Register an empty repeater array in main data object
@@ -479,7 +481,7 @@ jQuery( document ).ready( function() {
 
 						var newLength = $scope.repeater.slides.length;
 
-						if( newLength > oldLength ) {
+						if( newLength > oldLength && ! $scope.initializing ) {
 
 							$scope.repeater.swipeTo( newLength - 1 );
 
@@ -653,6 +655,10 @@ jQuery( document ).ready( function() {
 					$timeout( function() {
 						$scope.repeater.swipeTo( index );
 					});
+				};
+
+				this.stopInitializing = function() {
+					$scope.initializing = false;
 				}
 
 			},
@@ -771,6 +777,11 @@ jQuery( document ).ready( function() {
 				if( scope.$last ) {
 
 					repeaterCtrl.refresh();
+
+					// ... and turn "initializing" off
+					$timeout( function() {
+						repeaterCtrl.stopInitializing();
+					});
 
 				}
 
@@ -910,7 +921,8 @@ jQuery( document ).ready( function() {
 
 					_this.imageLayers = L.featureGroup();
 
-					var tilesURL = tileData.tiles[0].replace( 'http://0', '//{s}' );
+					// Necessary?
+					var tilesURL = tileData.tiles[0].replace( 'http://0', '//0' );
 
 					// Get container ID
 					// NOTE: Can't get it on init, because the {{index}} component will 
@@ -1071,6 +1083,14 @@ jQuery( document ).ready( function() {
 					}
 				};
 
+				$scope.hasMap = function() {
+					if( _this.zoomer ) {
+						return true;
+					} else {
+						return false;
+					}
+				}
+
 				this.getScope = function() {
 					return $scope;
 				};
@@ -1115,7 +1135,7 @@ jQuery( document ).ready( function() {
 				var imageScope = imageCtrl.getScope();
 
 				// Delete Add Annotation button and replace with Zoom Out button
-				var zoomButton = angular.element( "<a class='griot-button' ng-click='zoomOut()'>Zoom Out</a>" );
+				var zoomButton = angular.element( "<a class='griot-button' ng-show='hasMap()' ng-click='zoomOut()'>Zoom Out</a>" );
 				var compiled = $compile( zoomButton );
 				elem.find( '.griot-button' ).first().replaceWith( zoomButton );
 				compiled( imageScope );
@@ -1150,6 +1170,24 @@ jQuery( document ).ready( function() {
 					},
 					function( zoomer ) {
 						if( zoomer ) {
+
+							angular.forEach( imageCtrl.imageLayers._layers, function( layer ) {
+
+								layer.on( 'click', function( e ){
+
+									if( ! _this.deleting ) {
+									
+										var clickedAnnotation = e.target.annotation;
+
+										var index = jQuery.inArray( clickedAnnotation, imageCtrl.annotations );
+
+										repeaterCtrl.swipeTo( index );
+
+									}
+
+								});
+
+							});
 
 							zoomer.map.on( 'draw:deletestart', function() {
 
@@ -1194,7 +1232,7 @@ jQuery( document ).ready( function() {
 									// Zoom in on image
 									zoomer.map.fitBounds( layer );
 
-									// Attach click handler?
+									// Attach click handler
 									layer.on( 'click', function( e ){
 
 										if( ! _this.deleting ) {
