@@ -757,29 +757,35 @@ jQuery( document ).ready( function() {
 	 * item is printed and when height changes, and controls tabbing behavior
 	 * between fields in separate repeater items
 	 */
-	griot.directive( 'griotRepeaterFields', function() {
+	griot.directive( 'griotRepeaterFields', function( $timeout ) {
 
 		return {
 
 			restrict:'C',
 			require:'^repeater',
-			link: function( scope, elem, attrs, repeater ) {
+			link: function( scope, elem, attrs, repeaterCtrl ) {
+
+				var _this = this;
 
 				// Reinitialize Swiper instance when last repeater item is printed
 				if( scope.$last ) {
-					repeater.refresh();
+
+					repeaterCtrl.refresh();
+
 				}
 
 				// Reinitialize Swiper instance when height changes
 				scope.$watch( 
+
 					function( ) { 
 						return elem.height();
 					}, 
 					function( newValue, oldValue ) {
 						if( newValue != oldValue ) {
-							repeater.refresh();
+							repeaterCtrl.refresh();
 						}
 					}
+
 				);
 
 				// Intercept tabbing and move destination into view before focusing on 
@@ -956,6 +962,7 @@ jQuery( document ).ready( function() {
 
 				};
 
+
 				/**
 				 * Create drawing control object and append to zoomer
 				 */
@@ -1075,6 +1082,11 @@ jQuery( document ).ready( function() {
 
 	});
 
+	
+	/**
+	 * annotations directive
+	 * Adds listeners and callbacks to repeaters that represent image annotations.
+	 */
 	griot.directive( 'annotations', function( $timeout ) {
 
 		return {
@@ -1082,6 +1094,8 @@ jQuery( document ).ready( function() {
 			restrict: 'A',
 			require: ['repeater','^annotatedimage'],
 			link: function( scope, elem, attrs, ctrls ) {
+
+				var _this = this;
 
 				// Define controllers
 				var repeaterCtrl = ctrls[0];
@@ -1121,6 +1135,18 @@ jQuery( document ).ready( function() {
 					function( zoomer ) {
 						if( zoomer ) {
 
+							zoomer.map.on( 'draw:deletestart', function() {
+
+								_this.deleting = true;
+
+							});
+
+							zoomer.map.on( 'draw:deletestop', function() {
+
+								_this.deleting = false;
+
+							});
+
 
 							/**
 							 * Sync annotations created via zoomer
@@ -1151,6 +1177,21 @@ jQuery( document ).ready( function() {
 
 									// Zoom in on image
 									zoomer.map.fitBounds( layer );
+
+									// Attach click handler?
+									layer.on( 'click', function( e ){
+
+										if( ! _this.deleting ) {
+										
+											var clickedAnnotation = e.target.annotation;
+
+											var index = jQuery.inArray( clickedAnnotation, imageCtrl.annotations );
+
+											repeaterCtrl.swipeTo( index );
+
+										}
+
+									});
 
 								});
 
@@ -1229,8 +1270,6 @@ jQuery( document ).ready( function() {
 
 								repeater.swipeTo( newActiveIndex, 0, false );
 
-								//repeaterCtrl.refresh();
-
 							});
 
 
@@ -1252,6 +1291,12 @@ jQuery( document ).ready( function() {
 								});
 
 							});
+
+							/**
+							 * Go to annotation on image area click
+							 */
+							zoomer.map.on( 'draw:')
+
 
 						}
 					}
