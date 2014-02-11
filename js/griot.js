@@ -1065,6 +1065,16 @@ jQuery( document ).ready( function() {
 					return _this.annotations;
 				};
 
+				$scope.zoomOut = function() {
+					if( 'undefined' !== typeof _this.zoomer.map ) {
+						_this.zoomer.map.centerImageAtExtents();
+					}
+				};
+
+				this.getScope = function() {
+					return $scope;
+				};
+
 
 				// Watch tiledata and rebuild zoomer when it changes.
 				$element.find( '.griot-field-wrap[name=' + $attrs.name + '] input' ).on( 'blur', function() {
@@ -1087,7 +1097,7 @@ jQuery( document ).ready( function() {
 	 * annotations directive
 	 * Adds listeners and callbacks to repeaters that represent image annotations.
 	 */
-	griot.directive( 'annotations', function( $timeout ) {
+	griot.directive( 'annotations', function( $timeout, $compile ) {
 
 		return {
 
@@ -1101,8 +1111,14 @@ jQuery( document ).ready( function() {
 				var repeaterCtrl = ctrls[0];
 				var imageCtrl = ctrls[1];
 
-				// Do not allow users to add annotations from the repeater
-				elem.find( '.griot-button' ).first().remove();
+				// Get imageCtrl scope
+				var imageScope = imageCtrl.getScope();
+
+				// Delete Add Annotation button and replace with Zoom Out button
+				var zoomButton = angular.element( "<a class='griot-button' ng-click='zoomOut()'>Zoom Out</a>" );
+				var compiled = $compile( zoomButton );
+				elem.find( '.griot-button' ).first().replaceWith( zoomButton );
+				compiled( imageScope );
 
 				/**
 				 * Change focused image area when user advances repeater slider
