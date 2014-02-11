@@ -200,7 +200,7 @@ class Griot{
 		);
 		wp_enqueue_script(
 			'swiper',
-			plugins_url( 'components/swiper/idangerous.swiper.min.js', __FILE__ ),
+			plugins_url( 'components/swiper/idangerous.swiper.js', __FILE__ ),
 			false,
 			null,
 			true

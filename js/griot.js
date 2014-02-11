@@ -472,11 +472,28 @@ jQuery( document ).ready( function() {
 				$scope.refresh = function() {
 
 					$timeout( function() {
+
+						var oldLength = $scope.repeater.slides.length;
+
 						$scope.repeater.reInit();
+
+						var newLength = $scope.repeater.slides.length;
+
+						if( newLength > oldLength ) {
+
+							$scope.repeater.swipeTo( newLength - 1 );
+
+						} else {
+
+							$scope.repeater.swipeTo( $scope.repeater.activeIndex );
+
+						}
+
 						$scope.refreshNav();
+
 					});
 
-				}
+				};
 
 
 				/**
@@ -487,12 +504,6 @@ jQuery( document ).ready( function() {
 					$scope.showMenu = false;
 
 					repeaterModel.push( {} );
-
-					$scope.refresh();
-
-					$timeout( function() {
-						$scope.repeater.swipeTo( $scope.repeater.slides.length - 1 );
-					});
 
 				};
 
@@ -506,12 +517,6 @@ jQuery( document ).ready( function() {
 
 					repeaterModel.splice( itemIndex, 1 );
 
-					$scope.refresh();
-
-					$timeout( function() { 
-						$scope.repeater.swipeTo( $scope.repeater.activeIndex );
-					});
-
 				};
 
 
@@ -523,7 +528,6 @@ jQuery( document ).ready( function() {
 					repeaterModel.splice( newItemIndex, 0, repeaterModel.splice( currentItemIndex, 1)[0] );
 
 					$timeout( function(){ 
-						$scope.refresh();
 						$scope.repeater.swipeTo( newItemIndex );
 					});
 
@@ -637,15 +641,18 @@ jQuery( document ).ready( function() {
 				/**
 				 * Expose repeater object
 				 */
+				this.getRepeater = function() {
+					return $scope.repeater;
+				};
+
+
+				/**
+				 * Swipe to
+				 */
 				this.swipeTo = function( index ) {
-
 					$timeout( function() {
-
-						console.log( index );
 						$scope.repeater.swipeTo( index );
-
 					});
-
 				}
 
 			},
@@ -689,6 +696,8 @@ jQuery( document ).ready( function() {
 
 			},
 			link: function( scope, elem, attrs ) {
+
+				var _this = this;
 				
 				// Register repeater array in main data object
 				scope.register( attrs.name );
@@ -721,8 +730,15 @@ jQuery( document ).ready( function() {
 						return scope.model[ attrs.name ];
 					},
 					function() {
-						scope.refresh();
-						scope.swipeToActive();
+
+						// Wait 10ms in case this is part of a batch delete
+						window.clearTimeout( _this.checkModel );
+						_this.checkModel = window.setTimeout( function(){
+
+							scope.refresh();
+
+						}, 10 );
+
 					}
 
 				);
@@ -983,13 +999,13 @@ jQuery( document ).ready( function() {
 						},
 						function() {
 
-							if( ! $scope.zoomer ) {
+							if( ! _this.zoomer ) {
 								return;
 							}
 
 							angular.forEach( _this.imageLayers._layers, function( layer ) {
 
-								if( -1 == jQuery.inArray( layer.annotation, _this.annotations ) ) {
+								if( -1 === jQuery.inArray( layer.annotation, _this.annotations ) ) {
 
 									_this.imageLayers.removeLayer( layer );
 
@@ -1059,7 +1075,7 @@ jQuery( document ).ready( function() {
 
 	});
 
-	griot.directive( 'annotations', function() {
+	griot.directive( 'annotations', function( $timeout ) {
 
 		return {
 
@@ -1089,7 +1105,9 @@ jQuery( document ).ready( function() {
 						}
 						var geoJSON = annotations[ repeaterCtrl.getActiveIndex() ].geoJSON;
 						var layer = L.GeoJSON.geometryToLayer( geoJSON.geometry );
-						zoomer.map.fitBounds( layer );
+						if( zoomer ) {
+							zoomer.map.fitBounds( layer );
+						}
 					}
 				);
 
@@ -1136,9 +1154,6 @@ jQuery( document ).ready( function() {
 
 								});
 
-								// Swipe to annotation
-								repeaterCtrl.swipeTo( imageCtrl.annotations.length - 1 );
-
 							});
 
 
@@ -1147,17 +1162,74 @@ jQuery( document ).ready( function() {
 							 */
 							zoomer.map.on( 'draw:deleted', function( e ) {
 
+								var repeater = repeaterCtrl.getRepeater();
+
+								var activeIndex = repeaterCtrl.getActiveIndex();
+								var newActiveIndex = 0;
+
+								var goodEggs = [];
+								var badEggs = [];
+
 								angular.forEach( e.layers._layers, function( layer ) {
 
 									var index = jQuery.inArray( layer.annotation, imageCtrl.annotations );
 
+									badEggs.push( index );
+
+								});
+
+								angular.forEach( imageCtrl.annotations, function( annotation, index ) {
+
+									if( -1 === jQuery.inArray( index, badEggs ) ) {
+
+										goodEggs.push( index );
+
+									}
+
+								});
+
+								badEggs.reverse();
+
+								for( var i = 0; i === badEggs.length; i++ ) {
+
+
+									if( activeIndex === 0 ) {
+
+										break;
+
+									}
+
+									if( activeIndex === badEggs[i] ) {
+
+										activeIndex--;
+
+									}
+
+								}
+
+								angular.forEach( goodEggs, function( goodEgg, index ) {
+
+									if( activeIndex === goodEgg ) {
+
+										newActiveIndex = index;
+
+									}
+
+								});
+
+								angular.forEach( badEggs, function( badEgg ) {
+
 									scope.$apply( function() {
 
-										imageCtrl.annotations.splice( index, 1 );
-									
+											imageCtrl.annotations.splice( badEgg, 1 );
+										
 									});
 
 								});
+
+								repeater.swipeTo( newActiveIndex, 0, false );
+
+								//repeaterCtrl.refresh();
 
 							});
 
