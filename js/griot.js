@@ -875,8 +875,10 @@ jQuery( document ).ready( function() {
 
 					var tilesURL = tileData.tiles[0].replace( 'http://0', '//{s}' );
 
+					// Get container ID
+					// NOTE: Can't get it on init, because the {{index}} component will 
+					// not have been interpolated by Angular yet
 					_this.container_id = $element.find( '.griot-zoomer' ).first().attr( 'id' );
-					console.log( _this.container_id );
 
 					// Build zoomer and store instance in scope
 					_this.zoomer = Zoomer.zoom_image({
@@ -964,12 +966,11 @@ jQuery( document ).ready( function() {
 						var geoJSON = e.layer.toGeoJSON();
 
 						$scope.$apply( function() {
-							console.log( _this.annotations );
+
 		    			// Add geoJSON to annotation record in data object
 			    		var length = _this.annotations.push({
 				    		geoJSON: geoJSON
 				    	});
-				    	console.log( _this.annotations );
 
 			    		// Get a reference to the new annotation
 				    	var annotation = _this.annotations[ length - 1 ];
