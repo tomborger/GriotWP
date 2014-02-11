@@ -989,7 +989,7 @@ jQuery( document ).ready( function() {
 
 						angular.forEach( e.layers._layers, function( layer ) {
 
-							var index = jQuery.inArray( layer, _this.annotations );
+							var index = jQuery.inArray( layer.annotation, _this.annotations );
 
 							$scope.$apply( function() {
 
