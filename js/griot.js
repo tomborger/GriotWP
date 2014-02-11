@@ -797,7 +797,7 @@ jQuery( document ).ready( function() {
 
 				return "<div class='griot-annotated-image'>" +
 					"<field protected label='Image ID' name='" + attrs.name + "' type='text' ng-blur='resetZoom()' />" +
-					"<div class='griot-zoomer griot-prevent-swipe' id='zoomer" + Math.floor( Math.random() * 1000000 ) + "' />" + 
+					"<div class='griot-zoomer griot-prevent-swipe' id='zoomer" + Math.floor( Math.random() * 1000000 ) + "-{{$index || 0}}' />" + 
 					"<repeater annotations label='Annotations' name='annotations' label-singular='annotation' label-plural='annotations'>" +
 						transcrude +
 					"</repeater>" +
@@ -810,18 +810,19 @@ jQuery( document ).ready( function() {
 				// parents
 				var _this = this;
 
-				// Get reference to linked annotations repeater
-				this.model = ModelChain.getModel( $scope, $attrs.name );
+				// Get reference to current position in data object
+				this.model = ModelChain.getModel( $scope );
+
+				// Set annotations to empty array if not defined
+				if( 'undefined' === typeof this.model[ 'annotations' ] ) { 
+					this.model[ 'annotations' ] = [];
+				}
+
+				// Get reference to annotations
 				this.annotations = this.model[ 'annotations' ];
 
-				// Create a new array for the annotations repeater if not defined yet
-				this.annotations = this.annotations ? this.annotations : [];
-
-				// Reference to image id
+				// Get reference to image id
 				this.imageID = this.model[ $attrs.name ];
-
-				// ID of zoomer container (randomly generated)
-				this.container_id = $element.find( '.griot-zoomer' ).first().attr( 'id' );
 
 
 				/**
@@ -873,6 +874,9 @@ jQuery( document ).ready( function() {
 					_this.imageLayers = L.featureGroup();
 
 					var tilesURL = tileData.tiles[0].replace( 'http://0', '//{s}' );
+
+					_this.container_id = $element.find( '.griot-zoomer' ).first().attr( 'id' );
+					console.log( _this.container_id );
 
 					// Build zoomer and store instance in scope
 					_this.zoomer = Zoomer.zoom_image({
@@ -960,11 +964,12 @@ jQuery( document ).ready( function() {
 						var geoJSON = e.layer.toGeoJSON();
 
 						$scope.$apply( function() {
-
+							console.log( _this.annotations );
 		    			// Add geoJSON to annotation record in data object
 			    		var length = _this.annotations.push({
 				    		geoJSON: geoJSON
 				    	});
+				    	console.log( _this.annotations );
 
 			    		// Get a reference to the new annotation
 				    	var annotation = _this.annotations[ length - 1 ];
@@ -1027,7 +1032,7 @@ jQuery( document ).ready( function() {
 				 * If a user deletes an annotation using the repeater, remove the layer 
 				 * from the zoomer.
 				 */
-				_this.watchForExternalDeletion = function() {
+				this.watchForExternalDeletion = function() {
 
 					$scope.$watchCollection(
 
