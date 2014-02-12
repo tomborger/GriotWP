@@ -10,6 +10,17 @@
  */
 class Griot{
 
+
+	/**
+	 * Flush rewrite rules. Called on activation and deactivation.
+	 *
+	 * @since 0.0.1
+	 */
+	function flush_rewrite_rules() {
+		flush_rewrite_rules();
+	}
+
+
 	/**
 	 * Register Object custom post type.
 	 *
@@ -33,6 +44,13 @@ class Griot{
 			'not_found_in_trash'  => __( 'Not found in Trash', 'griot' ),
 		);
 
+		$rewrite = array(
+			'slug'                => _x( 'objects', 'URL Slug', 'griot' ),
+			'with_front'          => false,
+			'feeds'               => true,
+			'pages'               => false,
+		);
+
 		$args = array(
 			'label'               => __( 'object', 'griot' ),
 			'description'         => __( 'Represents a primary record in the application.', 'griot' ),
@@ -45,12 +63,13 @@ class Griot{
 			'show_in_nav_menus'   => false,
 			'show_in_admin_bar'   => true,
 			'menu_position'       => 5,
+			'menu_icon'						=> 'dashicons-format-image',
 			'can_export'          => true,
-			'has_archive'         => false,
+			'has_archive'         => true,
 			'exclude_from_search' => true,
 			'publicly_queryable'  => true,
 			'capability_type'     => 'post',
-			'menu_icon'						=> 'dashicons-format-image',
+			'rewrite'             => $rewrite,
 		);
 
 		register_post_type( 'object', $args );
@@ -80,6 +99,13 @@ class Griot{
 			'not_found_in_trash'  => __( 'Not found in Trash', 'griot' ),
 		);
 
+		$rewrite = array(
+			'slug'                => _x( 'stories', 'URL Slug', 'griot' ),
+			'with_front'          => false,
+			'feeds'               => true,
+			'pages'               => false,
+		);
+
 		$args = array(
 			'label'               => __( 'story', 'griot' ),
 			'description'         => __( 'Represents secondary media related to a primary record in the application.', 'griot' ),
@@ -92,12 +118,13 @@ class Griot{
 			'show_in_nav_menus'   => false,
 			'show_in_admin_bar'   => true,
 			'menu_position'       => 5,
+			'menu_icon'						=> 'dashicons-book',
 			'can_export'          => true,
-			'has_archive'         => false,
+			'has_archive'         => true,
 			'exclude_from_search' => true,
 			'publicly_queryable'  => true,
 			'capability_type'     => 'post',
-			'menu_icon'						=> 'dashicons-book',
+			'rewrite'             => $rewrite,
 		);
 
 		register_post_type( 'story', $args );
@@ -106,18 +133,33 @@ class Griot{
 
 
 	/**
-	 * Check to see if directory of stories and objects has been saved in options
-	 * and builds it if necessary.
+	 * Define endpoints for retrieving JSON.
 	 *
 	 * @since 0.0.1
 	 */
-	function check_directory() {
+	function register_endpoints() {
 
-		if( ! get_option( 'griot_directory' ) ) {
+		add_rewrite_endpoint( 'griot', EP_ROOT );
 
-			$this->rebuild_directory();
+	}
 
+
+	/**
+	 * Redirect requests to endpoint
+	 *
+	 * @since 0.0.1
+	 */
+	function redirect_endpoints() {
+
+		global $wp_query;
+
+		if( ! isset( $wp_query->query_vars['griot'] ) ) {
+			return;
 		}
+
+		include( 'endpoint.php' );
+
+		exit;
 
 	}
 
@@ -127,7 +169,7 @@ class Griot{
 	 *
 	 * @since 0.0.1
 	 */
-	function rebuild_directory() {
+	function build_directory() {
 
 		global $wpdb;
 
@@ -360,6 +402,14 @@ class Griot{
 	 */
 	function __construct( $templates ) {
 
+		// Set up on activation
+		register_activation_hook( __FILE__, array( $this, 'flush_rewrite_rules' ) );
+		register_activation_hook( __FILE__, array( $this, 'build_directory' ) );
+
+		// Clean up on deactivation
+		register_deactivation_hook( __FILE__, array( $this, 'flush_rewrite_rules' ) );
+
+
 		// Register templates
 		$this->templates = $templates;
 
@@ -367,13 +417,14 @@ class Griot{
 		add_action( 'init', array( $this, 'register_object_cpt' ) );
 		add_action( 'init', array( $this, 'register_story_cpt' ) );
 
-		// Generate record directory in options if it doesn't exist
-		$this->check_directory();
+		// Register endpoint
+		add_action( 'init', array( $this, 'register_endpoints' ) );
+		add_action( 'template_redirect', array( $this, 'redirect_endpoints' ) );
 
 		// Rebuild directory when post structure changes
-		add_action( 'save_post', array( $this, 'rebuild_directory' ) );
-		add_action( 'trash_post', array( $this, 'rebuild_directory' ) );
-		add_action( 'delete_post', array( $this, 'rebuild_directory' ) );
+		add_action( 'save_post', array( $this, 'build_directory' ) );
+		add_action( 'trash_post', array( $this, 'build_directory' ) );
+		add_action( 'delete_post', array( $this, 'build_directory' ) );
 
 		// If this page is managed by the plugin, enqueue scripts and styles
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts_and_styles' ) );
