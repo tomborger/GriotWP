@@ -49,6 +49,13 @@ angular.module( 'griot' ).directive( 'field', function() {
 					fieldhtml = "<select ng-model='model." + attrs.name + "' ng-options='record.ID as ( record | getTitle ) for record in ui.directory[ ui.oppositeRecordType ]' multiple ng-disabled='protected' ></select>";
 					break;
 
+				case 'image':
+					fieldhtml = "<div class='imagepicker' name='" + attrs.name + "'>" +
+						"<a class='griot-button griot-pick-image' ng-disabled='protected' ng-click='openFrame()'>Choose image</a>" +
+						"<input type='text' ng-model='model." + attrs.name + "' ng-disabled='protected' ></input>" +
+					"</div>";
+					break;
+
 			}
 
 			var templatehtml = "<div class='griot-field-wrap' data='data' ui='ui'>" +

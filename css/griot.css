@@ -300,3 +300,13 @@
 	height:500px;
 	margin-top:15px;
 }
+
+/*
+ * IMAGEPICKERS
+ ******************************************************************************/
+.imagepicker a,
+.imagepicker input{
+	display:inline-block;
+	width:auto;
+	vertical-align:middle;
+}

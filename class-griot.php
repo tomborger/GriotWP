@@ -387,6 +387,17 @@ class Griot{
 			null,
 			true
 		);
+		wp_enqueue_script( 
+			'griot-image',
+			plugins_url( 'js/directives/imagepicker.js', __FILE__ ),
+			'griot',
+			null,
+			true
+		);
+
+		// Add WordPress media manager
+		wp_enqueue_media();
+		wp_enqueue_script( 'custom-header' );
 
 		// Print application data
 		$this->print_data( $screen->id );
