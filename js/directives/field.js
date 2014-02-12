@@ -50,10 +50,7 @@ angular.module( 'griot' ).directive( 'field', function() {
 					break;
 
 				case 'image':
-					fieldhtml = "<div class='imagepicker' name='" + attrs.name + "'>" +
-						"<a class='griot-button griot-pick-image' ng-disabled='protected' ng-click='openFrame()'>Choose image</a>" +
-						"<input type='text' ng-model='model." + attrs.name + "' ng-disabled='protected' ></input>" +
-					"</div>";
+					fieldhtml = "<imagepicker name='" + attrs.name + "' />";
 					break;
 
 			}
