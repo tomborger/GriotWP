@@ -198,209 +198,225 @@ class Griot{
 	 */
 	function enqueue_scripts_and_styles() { 
 
-		// Return early if we're not on an object or story edit page.
 		$screen = get_current_screen();
 
-		$ok_screen_ids = array( 'object', 'story', );
+		$editor_screens = array( 'object', 'story' );
 
-		if( ! in_array( $screen->id, $ok_screen_ids ) ) {
+		// Enqueue scripts and styles for editing screens managed by GriotWP
+		if( in_array( $screen->id, $editor_screens ) ) {
 
-			return;
+			// Angular scripts
+			wp_enqueue_script( 
+				'angular', 
+				plugins_url( 'components/angular/angular.min.js', __FILE__ ), 
+				false, 
+				null,
+				true
+			);
+
+			// CKEditor
+			// Required by WYSIWYG fields
+			wp_enqueue_script(
+				'ckeditor',
+				plugins_url( 'components/ckeditor/ckeditor.js', __FILE__ ),
+				false
+			);
+			wp_enqueue_script(
+				'ckeditor_adapter',
+				plugins_url( 'components/ckeditor/adapters/jquery.js', __FILE__ ),
+				array( 'ckeditor' ),
+				null,
+				true
+			);
+
+			// Swiper
+			// Required by repeater fields
+			wp_enqueue_style(
+				'swiper',
+				plugins_url( 'components/swiper/idangerous.swiper.css', __FILE__ ),
+				false
+			);
+			wp_enqueue_script(
+				'swiper',
+				plugins_url( 'components/swiper/idangerous.swiper.js', __FILE__ ),
+				false,
+				null,
+				true
+			);
+
+			// Leaflet
+			// Required by zoomer fields
+			wp_enqueue_style(
+				'leaflet',
+				plugins_url( 'components/leafletnew/leaflet.css', __FILE__  ),
+				false
+			);
+			wp_enqueue_script(
+				'leaflet',
+				plugins_url( 'components/leafletnew/leaflet.js', __FILE__  ),
+				false,
+				null,
+				true
+			);
+
+			// Leaflet Draw
+			// Required by zoomer fields
+			wp_enqueue_style(
+				'leaflet_draw',
+				plugins_url( 'components/leaflet.draw/leaflet.draw.css', __FILE__  ),
+				false
+			);
+			wp_enqueue_script(
+				'leaflet_draw',
+				plugins_url( 'components/leaflet.draw/leaflet.draw.js', __FILE__  ),
+				array( 'leaflet' ),
+				null,
+				true
+			);
+
+			// jQuery Actual
+			// Required by zoomer fields
+			wp_enqueue_script( 
+				'jquery_actual',
+				plugins_url( 'components/jquery.actual/jquery.actual.min.js', __FILE__ ),
+				array( 'jquery' ),
+				null,
+				true
+			);
+
+			// Flat Image Zoom
+			// Required by zoomer fields
+			wp_enqueue_script(
+				'flat_image_zoom',
+				plugins_url( 'components/flat_image_zoom/flat_image_zoom.js', __FILE__ ),
+				array( 
+					'jquery', 
+					'leaflet', 
+					'leaflet_draw', 
+					'jquery_actual', 
+					'underscore',
+				),
+				null,
+				true
+			);
+
+			// Griot
+			wp_enqueue_style(
+				'griot',
+				plugins_url( 'css/griot.css', __FILE__ ),
+				false
+			);
+			wp_enqueue_script(
+				'griot',
+				plugins_url( 'js/griot.js', __FILE__ ),
+				'angular',
+				null,
+				true
+			);
+			wp_enqueue_script( 
+				'griot-main',
+				plugins_url( 'js/controllers/main.js', __FILE__ ),
+				'griot',
+				null,
+				true
+			);
+			wp_enqueue_script( 
+				'griot-modelchain',
+				plugins_url( 'js/services/modelchain.js', __FILE__ ),
+				'griot',
+				null,
+				true
+			);
+			wp_enqueue_script( 
+				'griot-get-title',
+				plugins_url( 'js/filters/get-title.js', __FILE__ ),
+				'griot',
+				null,
+				true
+			);
+			wp_enqueue_script( 
+				'griot-annotatedimage',
+				plugins_url( 'js/directives/annotatedimage.js', __FILE__ ),
+				'griot',
+				null,
+				true
+			);
+			wp_enqueue_script( 
+				'griot-annotations',
+				plugins_url( 'js/directives/annotations.js', __FILE__ ),
+				'griot',
+				null,
+				true
+			);
+			wp_enqueue_script( 
+				'griot-ckeditor',
+				plugins_url( 'js/directives/ckeditor.js', __FILE__ ),
+				'griot',
+				null,
+				true
+			);
+			wp_enqueue_script( 
+				'griot-field',
+				plugins_url( 'js/directives/field.js', __FILE__ ),
+				'griot',
+				null,
+				true
+			);
+			wp_enqueue_script( 
+				'griot-fieldset',
+				plugins_url( 'js/directives/fieldset.js', __FILE__ ),
+				'griot',
+				null,
+				true
+			);
+			wp_enqueue_script( 
+				'griot-repeater-fields',
+				plugins_url( 'js/directives/griot-repeater-fields.js', __FILE__ ),
+				'griot',
+				null,
+				true
+			);
+			wp_enqueue_script( 
+				'griot-repeater',
+				plugins_url( 'js/directives/repeater.js', __FILE__ ),
+				'griot',
+				null,
+				true
+			);
+			wp_enqueue_script( 
+				'griot-image',
+				plugins_url( 'js/directives/imagepicker.js', __FILE__ ),
+				'griot',
+				null,
+				true
+			);
+
+			// Add WordPress media manager
+			wp_enqueue_media();
+			wp_enqueue_script( 'custom-header' );
+
+			// Print application data
+			$this->print_data( $screen->id );
 
 		}
 
-		// Angular scripts
-		wp_enqueue_script( 
-			'angular', 
-			plugins_url( 'components/angular/angular.min.js', __FILE__ ), 
-			false, 
-			null,
-			true
-		);
+		// Enqueue special scripts and styles for settings page
+		if( 'settings_page_griotwp' == $screen->id ) {
 
-		// CKEditor
-		// Required by WYSIWYG fields
-		wp_enqueue_script(
-			'ckeditor',
-			plugins_url( 'components/ckeditor/ckeditor.js', __FILE__ ),
-			false
-		);
-		wp_enqueue_script(
-			'ckeditor_adapter',
-			plugins_url( 'components/ckeditor/adapters/jquery.js', __FILE__ ),
-			array( 'ckeditor' ),
-			null,
-			true
-		);
+			wp_enqueue_style(
+				'griot_settings',
+				plugins_url( 'css/griot-settings.css', __FILE__ ),
+				false
+			);
+			wp_enqueue_script(
+				'griot_settings',
+				plugins_url( 'js/griot-settings.js', __FILE__ ),
+				false,
+				null,
+				true
+			);
 
-		// Swiper
-		// Required by repeater fields
-		wp_enqueue_style(
-			'swiper',
-			plugins_url( 'components/swiper/idangerous.swiper.css', __FILE__ ),
-			false
-		);
-		wp_enqueue_script(
-			'swiper',
-			plugins_url( 'components/swiper/idangerous.swiper.js', __FILE__ ),
-			false,
-			null,
-			true
-		);
-
-		// Leaflet
-		// Required by zoomer fields
-		wp_enqueue_style(
-			'leaflet',
-			plugins_url( 'components/leafletnew/leaflet.css', __FILE__  ),
-			false
-		);
-		wp_enqueue_script(
-			'leaflet',
-			plugins_url( 'components/leafletnew/leaflet.js', __FILE__  ),
-			false,
-			null,
-			true
-		);
-
-		// Leaflet Draw
-		// Required by zoomer fields
-		wp_enqueue_style(
-			'leaflet_draw',
-			plugins_url( 'components/leaflet.draw/leaflet.draw.css', __FILE__  ),
-			false
-		);
-		wp_enqueue_script(
-			'leaflet_draw',
-			plugins_url( 'components/leaflet.draw/leaflet.draw.js', __FILE__  ),
-			array( 'leaflet' ),
-			null,
-			true
-		);
-
-		// jQuery Actual
-		// Required by zoomer fields
-		wp_enqueue_script( 
-			'jquery_actual',
-			plugins_url( 'components/jquery.actual/jquery.actual.min.js', __FILE__ ),
-			array( 'jquery' ),
-			null,
-			true
-		);
-
-		// Flat Image Zoom
-		// Required by zoomer fields
-		wp_enqueue_script(
-			'flat_image_zoom',
-			plugins_url( 'components/flat_image_zoom/flat_image_zoom.js', __FILE__ ),
-			array( 
-				'jquery', 
-				'leaflet', 
-				'leaflet_draw', 
-				'jquery_actual', 
-				'underscore',
-			),
-			null,
-			true
-		);
-
-		// Griot
-		wp_enqueue_style(
-			'griot',
-			plugins_url( 'css/griot.css', __FILE__ ),
-			false
-		);
-		wp_enqueue_script(
-			'griot',
-			plugins_url( 'js/griot.js', __FILE__ ),
-			'angular',
-			null,
-			true
-		);
-		wp_enqueue_script( 
-			'griot-main',
-			plugins_url( 'js/controllers/main.js', __FILE__ ),
-			'griot',
-			null,
-			true
-		);
-		wp_enqueue_script( 
-			'griot-modelchain',
-			plugins_url( 'js/services/modelchain.js', __FILE__ ),
-			'griot',
-			null,
-			true
-		);
-		wp_enqueue_script( 
-			'griot-get-title',
-			plugins_url( 'js/filters/get-title.js', __FILE__ ),
-			'griot',
-			null,
-			true
-		);
-		wp_enqueue_script( 
-			'griot-annotatedimage',
-			plugins_url( 'js/directives/annotatedimage.js', __FILE__ ),
-			'griot',
-			null,
-			true
-		);
-		wp_enqueue_script( 
-			'griot-annotations',
-			plugins_url( 'js/directives/annotations.js', __FILE__ ),
-			'griot',
-			null,
-			true
-		);
-		wp_enqueue_script( 
-			'griot-ckeditor',
-			plugins_url( 'js/directives/ckeditor.js', __FILE__ ),
-			'griot',
-			null,
-			true
-		);
-		wp_enqueue_script( 
-			'griot-field',
-			plugins_url( 'js/directives/field.js', __FILE__ ),
-			'griot',
-			null,
-			true
-		);
-		wp_enqueue_script( 
-			'griot-fieldset',
-			plugins_url( 'js/directives/fieldset.js', __FILE__ ),
-			'griot',
-			null,
-			true
-		);
-		wp_enqueue_script( 
-			'griot-repeater-fields',
-			plugins_url( 'js/directives/griot-repeater-fields.js', __FILE__ ),
-			'griot',
-			null,
-			true
-		);
-		wp_enqueue_script( 
-			'griot-repeater',
-			plugins_url( 'js/directives/repeater.js', __FILE__ ),
-			'griot',
-			null,
-			true
-		);
-		wp_enqueue_script( 
-			'griot-image',
-			plugins_url( 'js/directives/imagepicker.js', __FILE__ ),
-			'griot',
-			null,
-			true
-		);
-
-		// Add WordPress media manager
-		wp_enqueue_media();
-		wp_enqueue_script( 'custom-header' );
-
-		// Print application data
-		$this->print_data( $screen->id );
+		}
 
 	}
 
@@ -423,13 +439,8 @@ class Griot{
 			'title'       => $post->post_title,
 			'data'        => $post->post_content,
 			'directory'		=> get_option( 'griot_directory' ),
-			'imageSrc'    => get_option( 'griot_image_src', 'external' ),
-			'imageList'   => get_option( 'griot_image_list', array(
-				'http://new.artsmia.org/wp-content/uploads/2013/08/women_in_craft_and_design-e1375730308453-314x231.jpg',
-				'http://new.artsmia.org/wp-content/uploads/2013/07/sacred-305x231.jpg',
-				'http://new.artsmia.org/wp-content/uploads/2013/09/matisse-e1382128933785-346x231.jpg',
-				'http://new.artsmia.org/wp-content/uploads/2013/08/weinstein-e1381497453626-385x229.jpg'
-			) )
+			'imageSrc'    => get_option( 'griot_image_source', 'wordpress' ),
+			'imageList'   => get_option( 'griot_image_list' )
 
 		);
 
@@ -484,6 +495,110 @@ class Griot{
 
 
 	/**
+	 * Register settings page
+	 *
+	 * @since 0.0.1
+	 */
+	function register_settings_page() {
+
+		add_options_page(
+			'GriotWP Settings',
+			'GriotWP',
+			'manage_options',
+			'griotwp',
+			array( $this, 'render_settings_page' )
+		);
+
+	}
+
+
+	/**
+	 * Render settings page
+	 *
+	 * @since 0.0.1
+	 */
+	function render_settings_page() {
+	?>
+
+	<div class="wrap">
+
+		<?php screen_icon(); ?>
+		<h2>GriotWP Settings</h2>      
+
+		<form method="post" action="options.php">
+
+			<?php
+
+			settings_fields( 'griot_settings' );   
+			do_settings_sections( 'griotwp' );
+			submit_button(); 
+
+			?>
+
+		</form>
+
+  </div>
+
+  <?php
+	}
+
+
+	/**
+	 * Register settings
+	 *
+	 * @since 0.0.1
+	 */
+	function register_settings() {
+
+		register_setting( 'griot_settings', 'griot_image_source' );
+		register_setting( 'griot_settings', 'griot_image_list' );
+
+		add_settings_section( 'griot_image_settings', 'Image Settings', null, 'griotwp' );  
+
+		add_settings_field( 'griot_image_source', 'Image Source', array( $this, 'render_image_source_field' ), 'griotwp', 'griot_image_settings' );      
+		add_settings_field( 'griot_image_list', 'Available Images', array( $this, 'render_image_list_field' ), 'griotwp', 'griot_image_settings' );      
+
+	}
+
+
+	/**
+	 * Render image source field
+	 *
+	 * @since 0.0.1
+	 */
+	function render_image_source_field() {
+
+		$value = get_option( 'griot_image_source' );
+
+		?>
+
+		<div id='griot-image-source-setting'>
+			<input id='griot-image-source-setting-wordpress' type='radio' name='griot_image_source' value='wordpress' <?php checked( $value, 'wordpress' ); ?> /><label for='griot-image-source-setting-wordpress'>Insert images from WordPress</label><br />
+			<input id='griot-image-source-setting-external' type='radio' name='griot_image_source' value='external' <?php checked( $value, 'external' ); ?> /><label for='griot-image-source-setting-external'>Add a list of available image URLs</label>
+		</div>
+
+		<?php
+	}
+
+
+	/**
+	 * Render image list field
+	 *
+	 * @since 0.0.1
+	 */
+	function render_image_list_field() {
+
+		$content = get_option( 'griot_image_list' );
+
+		?>
+
+		<textarea id='griot-image-list-setting' name='griot_image_list'><?php echo $content; ?></textarea>
+
+		<?php
+	}
+
+
+	/**
 	 * Set up plugin
 	 * 
 	 * @since 0.0.1
@@ -520,6 +635,10 @@ class Griot{
 
 		// Add connections metabox
 		add_action( 'add_meta_boxes', array( $this, 'register_connections_metabox' ) );
+
+		// Add settings page and settings
+		add_action( 'admin_menu', array( $this, 'register_settings_page' ) );
+		add_action( 'admin_init', array( $this, 'register_settings' ) );
  
 	}
 
