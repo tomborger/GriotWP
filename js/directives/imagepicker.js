@@ -44,7 +44,7 @@ angular.module( 'griot' ).directive( 'imagepicker', function( $compile ) {
 
 				if( $scope.isImageTarget ) {
 
-					var selection = _this.frame.state().get( 'selection' );
+					var selection = $scope.wpmframe.state().get( 'selection' );
 					selection.each( function( attachment ) {
 
 						if( attachment.attributes.url ) {
@@ -52,7 +52,7 @@ angular.module( 'griot' ).directive( 'imagepicker', function( $compile ) {
 							$scope.$apply( function() {
 								$scope.model[ $attrs.name ] = attachment.attributes.url;
 								$scope.backgroundImage = 'url(' + attachment.attributes.url + ')';
-								_this.isImageTarget = false;
+								$scope.isImageTarget = false;
 								$scope.hasImage = true;
 
 							});
@@ -133,7 +133,9 @@ angular.module( 'griot' ).directive( 'imagepicker', function( $compile ) {
 		},
 		link: function( scope, elem, attrs ) {
 
-			var addImageBtn = angular.element( "<a class='griot-button griot-pick-image' ng-disabled='protected' ng-click='openFrame()'>Choose image</a><a class='griot-button griot-remove-image' ng-disabled='protected' ng-if='hasImage' ng-click='removeImage()'>Remove image</a>" );
+			var addImageBtn = angular.element( "<a class='griot-button griot-pick-image' ng-disabled='protected' ng-click='openFrame()' ng-if='!hasImage'>Choose image</a>" +
+				"<a class='griot-button griot-pick-image' ng-disabled='protected' ng-click='openFrame()' ng-if='hasImage'>Change image</a>" +
+				"<a class='griot-button griot-remove-image' ng-disabled='protected' ng-if='hasImage' ng-click='removeImage()'>Remove image</a>" );
 			var compiled = $compile( addImageBtn );
 			elem.closest( '.griot-field-wrap' ).find( '.griot-field-meta' ).append( addImageBtn );
 			compiled( scope );

@@ -431,6 +431,9 @@ class Griot{
 		// Grab $post variable
 		global $post;
 
+		// Arrange image list
+		$imageList = explode( "\r\n", get_option( 'griot_image_list' ) );
+
 		// Construct data for application
 		$griotData = array(
 
@@ -440,7 +443,7 @@ class Griot{
 			'data'        => $post->post_content,
 			'directory'		=> get_option( 'griot_directory' ),
 			'imageSrc'    => get_option( 'griot_image_source', 'wordpress' ),
-			'imageList'   => get_option( 'griot_image_list' )
+			'imageList'   => $imageList
 
 		);
 
