@@ -313,6 +313,7 @@
 	background-size:contain;
 	background-position:center center;
 	background-repeat:no-repeat;
+	cursor:pointer;
 	-webkit-box-shadow:inset 0px 0px 4px rgba(0,0,0,0.13);
 	-moz-box-shadow:inset 0px 0px 4px rgba(0,0,0,0.13);
 	box-shadow:inset 0px 0px 4px rgba(0,0,0,0.13);
@@ -333,6 +334,10 @@
 	background: -ms-radial-gradient(center, ellipse cover,  #ffffff 0%,#e5e5e5 100%); /* IE10+ */
 	background: radial-gradient(ellipse at center,  #ffffff 0%,#e5e5e5 100%); /* W3C */
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#e5e5e5',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+}
+.griot-current-image:hover,
+.griot-current-image.empty:hover{
+	border-color:#666;
 }
 .griot-current-image.empty:after{
 	content:'No image selected';
@@ -360,8 +365,18 @@
 	display:inline-block;
 	height:100px;
 	width:auto;
-	margin:25px;
-	-webkit-box-shadow: 0px 2px 4px rgba(0,0,0,0.13);
-	-moz-box-shadow: 0px 2px 4px rgba(0,0,0,0.13);
-	box-shadow: 0px 2px 4px rgba(0,0,0,0.13);
+	margin:25px 12px;
+	-webkit-transition:margin 100ms ease, -webkit-box-shadow 100ms ease;
+	-moz-transition:margin 100ms ease, -moz-box-shadow 100ms ease;
+	-o-transition:margin 100ms ease, -box-shadow 100ms ease;
+	transition:margin 100ms ease, box-shadow 100ms ease;
+	-webkit-box-shadow: 0px 2px 4px rgba(0,0,0,0.25);
+	-moz-box-shadow: 0px 2px 4px rgba(0,0,0,0.25);
+	box-shadow: 0px 2px 4px rgba(0,0,0,0.25);
+}
+.griot-image-chooser img:hover{
+	margin:12px 12px 38px;
+	-webkit-box-shadow: 0px 12px 14px rgba(0,0,0,0.25);
+	-moz-box-shadow: 0px 12px 14px rgba(0,0,0,0.25);
+	box-shadow: 0px 12px 14px rgba(0,0,0,0.25);
 }

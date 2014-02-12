@@ -22,7 +22,7 @@ angular.module( 'griot' ).directive( 'imagepicker', function( $compile ) {
 
 			}
 
-			templateHtml += "<div class='griot-current-image' ng-class='{empty: !hasImage }' ng-style='{ backgroundImage: backgroundImage }'></div>" +
+			templateHtml += "<div class='griot-current-image' ng-class='{empty: !hasImage }' ng-style='{ backgroundImage: backgroundImage }' ng-click='openFrame()'></div>" +
 				"</div>";
 
 			return templateHtml;
