@@ -12,8 +12,17 @@ angular.module( 'griot' ).directive( 'imagepicker', function( $compile ) {
 		replace: true,
 		template: function( elem, attrs ) {
 
-			var templateHtml = "<div class='griot-imagepicker' >" +
-					"<div class='griot-current-image' ng-class='{empty: !hasImage }' ng-style='{ backgroundImage: backgroundImage }'></div>" +
+			var templateHtml = "<div class='griot-imagepicker' >";
+			
+			if( 'external' === griotData.imageSrc ) {
+
+				templateHtml += "<div class='griot-image-chooser' ng-class='{active: angframe.isOpen}'>" +
+					"<img class='griot-image-thumbnail' ng-repeat='imageUrl in imageList' ng-src='{{ imageUrl }}' ng-click='angframe.select( imageUrl )' />" +
+				"</div>";
+
+			}
+
+			templateHtml += "<div class='griot-current-image' ng-class='{empty: !hasImage }' ng-style='{ backgroundImage: backgroundImage }'></div>" +
 				"</div>";
 
 			return templateHtml;
@@ -21,17 +30,19 @@ angular.module( 'griot' ).directive( 'imagepicker', function( $compile ) {
 		},
 		controller: function( $scope, $element, $attrs ) {
 
+    	$scope.hasImage = $scope.model[ $attrs.name ];
+
 			$scope.backgroundImage = $scope.model[ $attrs.name ] ? 'url(' + $scope.model[ $attrs.name ] + ')' : 'auto';
 
-			var _this = this;
+			$scope.isImageTarget = false;
 
-			this.isImageTarget = false;
+			// If using WordPress image library ...
 
-			this.frame = wp.media.griotImageLibrary.frame();
+			$scope.wpmframe = wp.media.griotImageLibrary.frame();
 
-			this.frame.on( 'select', function() {
+			$scope.wpmframe.on( 'select', function() {
 
-				if( _this.isImageTarget ) {
+				if( $scope.isImageTarget ) {
 
 					var selection = _this.frame.state().get( 'selection' );
 					selection.each( function( attachment ) {
@@ -50,17 +61,63 @@ angular.module( 'griot' ).directive( 'imagepicker', function( $compile ) {
 
 					});
 					
-
 	    	}
 
     	});
 
-    	$scope.hasImage = $scope.model[ $attrs.name ];
+    	// If using Angular image library ... 
+
+    	$scope.imageList = griotData.imageList;
+
+    	$scope.angframe = {
+
+    		isOpen: false,
+
+    		select: function( url ) {
+
+    			if( url ) {
+
+						$scope.model[ $attrs.name ] = url;
+
+						$scope.backgroundImage = 'url(' + url + ')';
+
+						$scope.isImageTarget = false;
+
+						$scope.hasImage = true;
+
+	    		}
+
+	    		$scope.angframe.close();
+
+    		},
+
+    		open: function() {
+  				$scope.angframe.isOpen = true;
+    		},
+
+    		close: function() {
+    			$scope.angframe.isOpen = false;
+    		},
+
+    		toggle: function() {
+    			$scope.angframe.isOpen = ! $scope.angframe.isOpen;
+    		}
+
+    	}
 
 			$scope.openFrame = function() {
 
-				_this.frame.open();
-				_this.isImageTarget = true;
+				if( 'wordpress' === griotData.imageSrc ) {
+
+					$scope.wpmframe.open();
+
+				} else {
+
+					$scope.angframe.toggle();
+
+				}
+
+				$scope.isImageTarget = true;
 
 			}
 
@@ -69,6 +126,7 @@ angular.module( 'griot' ).directive( 'imagepicker', function( $compile ) {
 				$scope.model[ $attrs.name ] = null;
 				$scope.hasImage = false;
 				$scope.backgroundImage = 'auto';
+				$scope.angframe.close();
 
 			}
 
@@ -107,4 +165,4 @@ wp.media.griotImageLibrary = {
 
 	},
 
-};
+}

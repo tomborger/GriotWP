@@ -423,6 +423,13 @@ class Griot{
 			'title'       => $post->post_title,
 			'data'        => $post->post_content,
 			'directory'		=> get_option( 'griot_directory' ),
+			'imageSrc'    => get_option( 'griot_image_src', 'external' ),
+			'imageList'   => get_option( 'griot_image_list', array(
+				'http://new.artsmia.org/wp-content/uploads/2013/08/women_in_craft_and_design-e1375730308453-314x231.jpg',
+				'http://new.artsmia.org/wp-content/uploads/2013/07/sacred-305x231.jpg',
+				'http://new.artsmia.org/wp-content/uploads/2013/09/matisse-e1382128933785-346x231.jpg',
+				'http://new.artsmia.org/wp-content/uploads/2013/08/weinstein-e1381497453626-385x229.jpg'
+			) )
 
 		);
 
