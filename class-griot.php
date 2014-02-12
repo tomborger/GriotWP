@@ -209,13 +209,13 @@ class Griot{
 
 		}
 
-		// Angular
+		// Angular scripts
 		wp_enqueue_script( 
 			'angular', 
 			plugins_url( 'components/angular/angular.min.js', __FILE__ ), 
 			false, 
 			null,
-			false
+			true
 		);
 
 		// CKEditor
@@ -313,7 +313,77 @@ class Griot{
 		wp_enqueue_script(
 			'griot',
 			plugins_url( 'js/griot.js', __FILE__ ),
-			false,
+			'angular',
+			null,
+			true
+		);
+		wp_enqueue_script( 
+			'griot-main',
+			plugins_url( 'js/controllers/main.js', __FILE__ ),
+			'griot',
+			null,
+			true
+		);
+		wp_enqueue_script( 
+			'griot-modelchain',
+			plugins_url( 'js/services/modelchain.js', __FILE__ ),
+			'griot',
+			null,
+			true
+		);
+		wp_enqueue_script( 
+			'griot-get-title',
+			plugins_url( 'js/filters/get-title.js', __FILE__ ),
+			'griot',
+			null,
+			true
+		);
+		wp_enqueue_script( 
+			'griot-annotatedimage',
+			plugins_url( 'js/directives/annotatedimage.js', __FILE__ ),
+			'griot',
+			null,
+			true
+		);
+		wp_enqueue_script( 
+			'griot-annotations',
+			plugins_url( 'js/directives/annotations.js', __FILE__ ),
+			'griot',
+			null,
+			true
+		);
+		wp_enqueue_script( 
+			'griot-ckeditor',
+			plugins_url( 'js/directives/ckeditor.js', __FILE__ ),
+			'griot',
+			null,
+			true
+		);
+		wp_enqueue_script( 
+			'griot-field',
+			plugins_url( 'js/directives/field.js', __FILE__ ),
+			'griot',
+			null,
+			true
+		);
+		wp_enqueue_script( 
+			'griot-fieldset',
+			plugins_url( 'js/directives/fieldset.js', __FILE__ ),
+			'griot',
+			null,
+			true
+		);
+		wp_enqueue_script( 
+			'griot-repeater-fields',
+			plugins_url( 'js/directives/griot-repeater-fields.js', __FILE__ ),
+			'griot',
+			null,
+			true
+		);
+		wp_enqueue_script( 
+			'griot-repeater',
+			plugins_url( 'js/directives/repeater.js', __FILE__ ),
+			'griot',
 			null,
 			true
 		);
@@ -322,6 +392,7 @@ class Griot{
 		$this->print_data( $screen->id );
 
 	}
+
 
 	/**
 	 * Expose record data and template URL to application
