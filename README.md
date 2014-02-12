@@ -6,7 +6,7 @@ Provides a simple and extensible back end for the Minneapolis Institute of Arts'
 
 ### About Griot for iPad
 
-Griot is an open-source iPad application that facilitates engagement with a collection of *objects* (artifacts, artwork, graphs, or anything else that can be represented visually) through *annotations* (points of interest on the object itself) and *stories* (related text-based and multimedia content, presented as a series of pages).
+Griot is an open-source iPad application that facilitates engagement with a collection of **objects** (artifacts, artwork, graphs, or anything else that can be represented visually) through **annotations** (points of interest on the object itself) and **stories** (related text-based and multimedia content, presented as a series of pages).
 
 The Griot framework has three parts:
 
@@ -20,12 +20,12 @@ GriotWP is a free WordPress plugin that creates a simple and extensible environm
 
 Specifically, GriotWP creates:
 
-*   Three new post types: Objects, Stories, and Griot (hidden).
+*   Two new post types, Objects and Stories.
 *   A user-friendly, code-free interface for entering content and setting up relationships.
 *   Semantic XHTML templates for tweaking and extending the editing environment.
 *   An endpoint (/griot/) for exposing entered data in JSON format.
 
-GriotWP can be installed on top of an existing WordPress site.
+GriotWP may be installed on top of an existing WordPress site.
 
 ## Installation
 
@@ -44,11 +44,5 @@ The **image configuration object** is a JSON object that gives the system an ove
 A sample image config can be found in the /sample/ folder.
 
 If an image config is not defined, the user must enter explicit URLs for both zoomable and generic images. 
-
-## Frequently Asked Questions
-
-## Screenshots
-
-## Changelog
 
 ## Extending

@@ -39,8 +39,6 @@ else {
 
 }
 
-echo "<h1>" . $request . "</h1>";
-
 switch( $request ) {
 
 	case 'all':
