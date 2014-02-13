@@ -1,7 +1,7 @@
 /**
  * getTitle filter
  *
- * For use in making connections between records. Returns the title if one
+ * For use in defining relationships between records. Returns the title if one
  * is set, otherwise 'Untitled (post #{ID})'
  */
 angular.module( 'griot' ).filter( 'getTitle', function() {

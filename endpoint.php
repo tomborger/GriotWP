@@ -2,43 +2,42 @@
 
 global $wpdb;
 
+// Get vars appended to 'griot' endpoint
 $query_vars = get_query_var( 'griot' );
 $query_arr = explode( '/', $query_vars );
 
-// No extra endpoints; return all data
 if( 0 == count( $query_arr ) ) {
-
+	
+	// No extra endpoints; return all data
 	$request = 'all';
 
 }
-
-// Malformed
 else if( ! in_array( $query_arr[0], array( 'objects', 'stories' ) ) ) {
 
+	// Malformed
 	$request = 'all';
 
 }
+else if( 1 == count( $query_arr ) && in_array( $query_arr[0], array( 'objects', 'stories' ) ) {
 
-// 'objects' or 'stories'
-else if( 1 == count( $query_arr ) ) {
-
+	// e.g. '/griot/objects/'
 	$request = $query_arr[0];
 
 } 
-
-// ID
 else if( is_numeric( $query_arr[1] ) ) {
 
+	// e.g. '/griot/objects/370/'
 	$request = $query_arr[1];
 
 }
-
 else {
 
+	// e.g. '/griot/objects/wrong/'
 	$request = 'all';
 
 }
 
+// Return JSON
 switch( $request ) {
 
 	case 'all':
@@ -75,7 +74,7 @@ switch( $request ) {
 			$wpdb->prepare(
 				"SELECT post_content FROM $wpdb->posts WHERE post_status = 'publish' AND post_type = %s",
 				$post_type
-		 )
+			)
 		);
 
 		$output = array();

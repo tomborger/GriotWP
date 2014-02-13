@@ -45,17 +45,21 @@ angular.module( 'griot' ).directive( 'field', function() {
 					fieldhtml = "<textarea ng-model='model." + attrs.name + "' ck-editor ng-disabled='protected' ></textarea>";
 					break;
 
-				case 'connection':
-					fieldhtml = "<select ng-model='model." + attrs.name + "' ng-options='record.ID as ( record | getTitle ) for record in ui.directory[ ui.oppositeRecordType ]' multiple ng-disabled='protected' ></select>";
+				case 'relationship':
+					fieldhtml = "<select ng-model='model." + attrs.name + "' ng-options='record.ID as ( record | getTitle ) for record in ui.recordList[ ui.oppositeRecordType ]' multiple ng-disabled='protected' ></select>";
 					break;
 
 				case 'image':
 					fieldhtml = "<imagepicker name='" + attrs.name + "' />";
 					break;
 
+				case 'custom':
+					fieldhtml = elem.contents();
+					break;
+
 			}
 
-			var templatehtml = "<div class='griot-field-wrap' data='data' ui='ui'>" +
+			var templatehtml = "<div class='griot-field-wrap' ng-class='{ \"griot-protected\": protected}' data='data' ui='ui' >" +
 				"<div class='griot-field-meta'>";
 
 			// Add label if specified

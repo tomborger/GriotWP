@@ -12,7 +12,7 @@ angular.module( 'griot' ).controller( 'griotCtrl', function( $scope, ModelChain 
 	$scope.ui = {
 		recordType: griotData.recordType,
 		oppositeRecordType: griotData.recordType == 'object' ? 'story' : 'object',
-		directory: griotData.directory,
+		recordList: griotData.recordList,
 	}
 
 	// Initialize model chain

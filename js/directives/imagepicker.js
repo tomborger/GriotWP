@@ -107,6 +107,10 @@ angular.module( 'griot' ).directive( 'imagepicker', function( $compile ) {
 
 			$scope.openFrame = function() {
 
+				if( $scope.protected ) {
+					return;
+				}
+
 				if( 'wordpress' === griotData.imageSrc ) {
 
 					$scope.wpmframe.open();
@@ -122,6 +126,10 @@ angular.module( 'griot' ).directive( 'imagepicker', function( $compile ) {
 			}
 
 			$scope.removeImage = function() {
+
+				if( $scope.protected ) {
+					return;
+				}
 
 				$scope.model[ $attrs.name ] = null;
 				$scope.hasImage = false;

@@ -1,64 +1,23 @@
 <div>
 
-
-	<field label='Image1' name='image1' type='image' />
-
-	<field label='Image2' name='image2' type='image' />
-
-<!-- 
-
 	<repeater label='Views' name='views' label-singular='view' label-plural='views'>
 
 		<annotatedimage label='Image' name='image'>
 
-			<field label='Text' name='text' type='text' />
+			<field label='Title' name='title' type='text' />
 
-			<field label='Text Area' name='textarea' type='textarea' />
+			<field label='Description' name='description' type='wysiwyg' />
 
-			<field label='WYSIWYG' name='wysiwyg' type='wysiwyg' />
+			<repeater label='Attachments' name='attachments' label-singular='attachment' label-plural='attachments'>
 
-			<field protected label='Featured Image' name='featuredimage' type='image' />
+				<field name='image' type='image' />
+
+			</repeater>
 
 		</annotatedimage>
 
 	</repeater>
 
-
-
-	<repeater label='Repeater' name='repeater' label-singular='repeater item' label-plural='repeater items'>
-
-		<field label='Text' name='text' type='text' />
-
-		<field label='Text Area' name='textarea' type='textarea' />
-
-		<field label='WYSIWYG' name='wysiwyg' type='wysiwyg' />
-
-			<repeater label='Repeater' name='repeater' label-singular='repeater item' label-plural='repeater items'>
-
-				<field label='Text' name='text' type='text' />
-
-				<field label='Text Area' name='textarea' type='textarea' />
-
-				<field label='WYSIWYG' name='wysiwyg' type='wysiwyg' />
-
-					<repeater label='Repeater' name='repeater' label-singular='repeater item' label-plural='repeater items'>
-
-						<field label='Text' name='text' type='text' />
-
-						<field label='Text Area' name='textarea' type='textarea' />
-
-						<field label='WYSIWYG' name='wysiwyg' type='wysiwyg' />
-
-					</repeater>
-
-					<field label='Text' name='tester' type='text' />
-
-			</repeater>
-
-			<field label='Text' name='tester' type='text' />
-
-	</repeater>
-
-	-->
+	<field label='Object Description' name='description' type='wysiwyg' />
 
 </div>

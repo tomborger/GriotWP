@@ -133,11 +133,11 @@ class Griot{
 
 
 	/**
-	 * Define endpoints for retrieving JSON.
+	 * Define endpoint for retrieving JSON.
 	 *
 	 * @since 0.0.1
 	 */
-	function register_endpoints() {
+	function register_endpoint() {
 
 		add_rewrite_endpoint( 'griot', EP_ROOT );
 
@@ -149,7 +149,7 @@ class Griot{
 	 *
 	 * @since 0.0.1
 	 */
-	function redirect_endpoints() {
+	function redirect_endpoint() {
 
 		global $wp_query;
 
@@ -165,11 +165,11 @@ class Griot{
 
 
 	/**
-	 * Build a directory of stories and objects for use in connection fields.
+	 * Build a list of story and object records for use in related record fields.
 	 *
 	 * @since 0.0.1
 	 */
-	function build_directory() {
+	function build_record_list() {
 
 		global $wpdb;
 
@@ -181,18 +181,18 @@ class Griot{
 
 		$stories = $wpdb->get_results( $stories_query, ARRAY_A );
 
-		$directory = array(
+		$record_list = array(
 			'object' => $objects,
 			'story' => $stories,
 		);
 
-		update_option( 'griot_directory', $directory );
+		update_option( 'griot_record_list', $record_list );
 
 	}
 
 
 	/**
-	 * Enqueue vendor and plugin scripts.
+	 * Enqueue vendor and plugin scripts and stylesheets.
 	 *
 	 * @since 0.0.1
 	 */
@@ -200,12 +200,11 @@ class Griot{
 
 		$screen = get_current_screen();
 
-		$editor_screens = array( 'object', 'story' );
+		// Editing screens managed by GriotWP
+		$edit_screens = array( 'object', 'story' );
+		if( in_array( $screen->id, $edit_screens ) ) {
 
-		// Enqueue scripts and styles for editing screens managed by GriotWP
-		if( in_array( $screen->id, $editor_screens ) ) {
-
-			// Angular scripts
+			// Angular
 			wp_enqueue_script( 
 				'angular', 
 				plugins_url( 'components/angular/angular.min.js', __FILE__ ), 
@@ -245,7 +244,7 @@ class Griot{
 			);
 
 			// Leaflet
-			// Required by zoomer fields
+			// Required by annotatedimage fields
 			wp_enqueue_style(
 				'leaflet',
 				plugins_url( 'components/leafletnew/leaflet.css', __FILE__  ),
@@ -260,7 +259,7 @@ class Griot{
 			);
 
 			// Leaflet Draw
-			// Required by zoomer fields
+			// Required by annotatedimage fields
 			wp_enqueue_style(
 				'leaflet_draw',
 				plugins_url( 'components/leaflet.draw/leaflet.draw.css', __FILE__  ),
@@ -275,7 +274,7 @@ class Griot{
 			);
 
 			// jQuery Actual
-			// Required by zoomer fields
+			// Required by annotatedimage fields
 			wp_enqueue_script( 
 				'jquery_actual',
 				plugins_url( 'components/jquery.actual/jquery.actual.min.js', __FILE__ ),
@@ -285,7 +284,7 @@ class Griot{
 			);
 
 			// Flat Image Zoom
-			// Required by zoomer fields
+			// Required by annotatedimage fields
 			wp_enqueue_script(
 				'flat_image_zoom',
 				plugins_url( 'components/flat_image_zoom/flat_image_zoom.js', __FILE__ ),
@@ -390,8 +389,22 @@ class Griot{
 				null,
 				true
 			);
+			wp_enqueue_script(
+				'griot-switch',
+				plugins_url( 'js/directives/switch.js', __FILE__ ),
+				'griot',
+				null,
+				true
+			);
+			wp_enqueue_script(
+				'griot-switchgroup',
+				plugins_url( 'js/directives/switchgroup.js', __FILE__ ),
+				'griot',
+				null,
+				true
+			);
 
-			// Add WordPress media manager
+			// WordPress media manager scripts
 			wp_enqueue_media();
 			wp_enqueue_script( 'custom-header' );
 
@@ -403,6 +416,7 @@ class Griot{
 		// Enqueue special scripts and styles for settings page
 		if( 'settings_page_griotwp' == $screen->id ) {
 
+			// Griot Settings
 			wp_enqueue_style(
 				'griot_settings',
 				plugins_url( 'css/griot-settings.css', __FILE__ ),
@@ -422,28 +436,28 @@ class Griot{
 
 
 	/**
-	 * Expose record data and template URL to application
+	 * Print application data and settings for application
 	 * 
 	 * @since 0.0.1
 	 */
 	function print_data( $screen_id ) {
 
-		// Grab $post variable
 		global $post;
 
-		// Arrange image list
+		// Convert available image list into array
 		$imageList = explode( "\r\n", get_option( 'griot_image_list' ) );
 
-		// Construct data for application
+		// Construct data dump object for application
 		$griotData = array(
 
 			'recordType'  => $screen_id,
 			'templateUrl' => $this->templates[ $screen_id ],
 			'title'       => $post->post_title,
 			'data'        => $post->post_content,
-			'directory'		=> get_option( 'griot_directory' ),
+			'recordList'  => get_option( 'griot_record_list' ),
+			'tilejson'    => get_option( 'griot_tilejson_base_url' ),
 			'imageSrc'    => get_option( 'griot_image_source', 'wordpress' ),
-			'imageList'   => $imageList
+			'imageList'   => $imageList,
 
 		);
 
@@ -458,11 +472,11 @@ class Griot{
 
 
 	/**
-	 * Register metabox for connections
+	 * Register metabox for related posts field
 	 *
 	 * @since 0.0.1
 	 */
-	function register_connections_metabox() {
+	function register_related_records_metabox() {
 
 		// Return early if we're not on an object page.
 		$screen = get_current_screen();
@@ -475,9 +489,9 @@ class Griot{
 
 		// Add meta box
 		add_meta_box(
-			'griot-connections',
+			'griot-related-records',
 			 __( 'Related Stories', 'griot' ),
-			array( $this, 'connections_metabox_template' ),
+			array( $this, 'related_records_metabox_template' ),
 			'object',
 			'side'
 		);
@@ -486,13 +500,13 @@ class Griot{
 
 
 	/**
-	 * Callback that prints Angular template to connections metabox.
+	 * Callback that prints Angular template to related records metabox.
 	 *
 	 * @since 0.0.1
 	 */
-	function connections_metabox_template() {
+	function related_records_metabox_template() {
 
-		echo "<field name='connections' type='connection' />";
+		echo "<field name='related' type='relationship' />";
 
 	}
 
@@ -553,13 +567,46 @@ class Griot{
 	 */
 	function register_settings() {
 
+		register_setting( 'griot_settings', 'griot_tilejson_base_url', array( $this, 'sanitize_tilejson_base_url_field' ) );
 		register_setting( 'griot_settings', 'griot_image_source' );
 		register_setting( 'griot_settings', 'griot_image_list' );
 
 		add_settings_section( 'griot_image_settings', 'Image Settings', null, 'griotwp' );  
 
+		add_settings_field( 'griot_tilejson_base_url', 'TileJSON Base URL', array( $this, 'render_tilejson_base_url_field' ), 'griotwp', 'griot_image_settings' );
 		add_settings_field( 'griot_image_source', 'Image Source', array( $this, 'render_image_source_field' ), 'griotwp', 'griot_image_settings' );      
 		add_settings_field( 'griot_image_list', 'Available Images', array( $this, 'render_image_list_field' ), 'griotwp', 'griot_image_settings' );      
+
+	}
+
+
+	/**
+	 * Render TileJSON Base URL field
+	 *
+	 * @since 0.0.1
+	 */
+	function render_tilejson_base_url_field() {
+
+		$content = get_option( 'griot_tilejson_base_url' );
+
+		?>
+
+		<input type='text' name='griot_tilejson_base_url' value='<?php echo $content; ?>' />
+
+		<?php
+	}
+
+
+	/**
+	 * Add a trailing slash to TileJSON Base URL field if not included
+	 *
+	 * @since 0.0.1
+	 */
+	function sanitize_tilejson_base_url_field( $input ) {
+
+		$sanitized = substr( $input, -1 ) == '/' ? $input : $input . '/';
+
+		return $sanitized;
 
 	}
 
@@ -605,17 +652,16 @@ class Griot{
 	 * Set up plugin
 	 * 
 	 * @since 0.0.1
-	 * @param bool $load_default If true, load default fields from plugin.
+	 * @param array $templates Templates to be used for each post type.
 	 */
 	function __construct( $templates ) {
 
-		// Set up on activation
+		// Activation: update rewrite rules and build list of records
 		register_activation_hook( __FILE__, array( $this, 'flush_rewrite_rules' ) );
-		register_activation_hook( __FILE__, array( $this, 'build_directory' ) );
+		register_activation_hook( __FILE__, array( $this, 'build_record_list' ) );
 
-		// Clean up on deactivation
+		// Deactivation: update rewrite rules
 		register_deactivation_hook( __FILE__, array( $this, 'flush_rewrite_rules' ) );
-
 
 		// Register templates
 		$this->templates = $templates;
@@ -625,19 +671,20 @@ class Griot{
 		add_action( 'init', array( $this, 'register_story_cpt' ) );
 
 		// Register endpoint
-		add_action( 'init', array( $this, 'register_endpoints' ) );
-		add_action( 'template_redirect', array( $this, 'redirect_endpoints' ) );
+		add_action( 'init', array( $this, 'register_endpoint' ) );
+		add_action( 'template_redirect', array( $this, 'redirect_endpoint' ) );
 
-		// Rebuild directory when post structure changes
-		add_action( 'save_post', array( $this, 'build_directory' ) );
-		add_action( 'trash_post', array( $this, 'build_directory' ) );
-		add_action( 'delete_post', array( $this, 'build_directory' ) );
+		// Rebuild record list when post structure changes
+		add_action( 'save_post', array( $this, 'build_record_list' ) );
+		add_action( 'trashed_post', array( $this, 'build_record_list' ) );
+		add_action( 'untrashed_post', array( $this, 'build_record_list' ) );
+		add_action( 'deleted_post', array( $this, 'build_record_list' ) );
 
 		// If this page is managed by the plugin, enqueue scripts and styles
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts_and_styles' ) );
 
-		// Add connections metabox
-		add_action( 'add_meta_boxes', array( $this, 'register_connections_metabox' ) );
+		// Add related records metabox
+		add_action( 'add_meta_boxes', array( $this, 'register_related_records_metabox' ) );
 
 		// Add settings page and settings
 		add_action( 'admin_menu', array( $this, 'register_settings_page' ) );

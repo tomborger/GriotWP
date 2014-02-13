@@ -45,6 +45,9 @@ angular.module( 'griot' ).directive( 'annotatedimage', function( $http, ModelCha
 			// Get reference to image id
 			this.imageID = this.model[ $attrs.name ];
 
+			// Get tileJSON base URL
+			this.tilejson = griotData.tilejson;
+
 
 			/**
 			 * Check to see if image ID leads to tiles
@@ -67,10 +70,10 @@ angular.module( 'griot' ).directive( 'annotatedimage', function( $http, ModelCha
 
 				// Build tile server URL
 				// TODO: Pull from settings.
-				this.tilesLocation = 'http://tilesaw.dx.artsmia.org/' + newImageID + '.tif';
+				this.tilejson = 'http://tilesaw.dx.artsmia.org/' + newImageID + '.tif';
 
 				// Get tile data if it exists and build or destroy zoomer accordingly
-				var http = $http.get( _this.tilesLocation );
+				var http = $http.get( _this.tilejson );
 				http.success( function( tileData ) { 
 
 					_this.buildZoomer( tileData );

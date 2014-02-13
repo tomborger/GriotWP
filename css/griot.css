@@ -42,7 +42,6 @@
 .griot-button{
 	display:inline-block;
 	background-color:#f7f7f7;
-	border-color:#999;
 	color:#222;
 	height:22px;
 	line-height:22px;
@@ -61,6 +60,14 @@
 	border-color:#999;
 	color:#222;
 }
+.griot-button[disabled],
+.griot-button[disabled]:hover{
+	opacity:0.5;
+	border-color:#ccc;
+	background-color:#f7f7f7;
+	cursor:default;
+}
+
 .griot-icon{
 	font-family:dashicons;
 	font-size:20px;
@@ -289,7 +296,7 @@
 /*
  * CONNECTIONS
  ******************************************************************************/
-#griot-connections select{
+#griot-related-records select{
 	min-height:150px;
 }
 
@@ -341,6 +348,13 @@
 }
 .griot-current-image.empty:after{
 	content:'No image selected';
+}
+.griot-protected .griot-current-image{
+	opacity:0.5;
+	cursor:default;
+}
+.griot-protected .griot-current-image:hover{
+	border-color:#ccc;
 }
 .griot-image-chooser{
 	background-color:#ddd;
